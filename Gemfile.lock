@@ -1,0 +1,14 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rly (0.2.3)
+
+PLATFORMS
+  x86_64-darwin-17
+  x86_64-darwin-18
+
+DEPENDENCIES
+  rly (~> 0.2.3)
+
+BUNDLED WITH
+   2.2.16
