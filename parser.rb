@@ -13,11 +13,17 @@ class Operation
 end
 
 class Parser < Rly::Yacc
-  rule 'statement : NAME "=" expression' do |statement, name, _, expression|
-    statement.value = Operation.new(:assign, name, expression)
+  rule 'expression : NAME' do |expression, name|
+    exit if ['quit', 'exit'].include?(name.value)
+
+    # lookup
   end
 
   rule 'expression : NUMBER' do |expression, number|
     expression.value = Operation.new(:number, number)
+  end
+
+  rule 'statement : NAME "=" expression' do |statement, name, _, expression|
+    statement.value = Operation.new(:assign, name, expression)
   end
 end
