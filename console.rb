@@ -15,6 +15,9 @@ puts "-----"
 Parser.rules.each { |rule, _| puts rule }
 puts
 
+puts "'exit' to quit"
+puts
+
 while (buffer = Readline.readline("> ", true))
   parse_tree = parser.parse(buffer)
   puts parse_tree
