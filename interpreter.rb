@@ -16,6 +16,7 @@ class Interpreter
 
     # for binary operations, evaluate each arg (remember we only ever get them in pairs)
     # then do the operations on them, e.g. "a op b"
+    #
     # when :+,:-,:*,:/ then tree.arguments.map(&method(:evaluate)).reduce(&tree.operation)
 
     # ^^ this is logically equivalent to the simpler, explicit code of:
@@ -23,9 +24,9 @@ class Interpreter
     when :- then self.-(*tree.arguments)
     when :* then self.*(*tree.arguments)
     when :/ then self./(*tree.arguments)
+
     when :% then self.%(*tree.arguments)
 
-    # when :+ then self.+(*tree.arguments)
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
