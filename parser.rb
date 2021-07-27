@@ -15,7 +15,7 @@ end
 class Parser < Rly::Yacc
   rule 'statement : NAME "=" expression' do |statement, name, _, expression|
     puts "Parser: (statement : NAME = expression) => name: #{name.inspect}, expression: #{expression.inspect}"
-    statement.value = Operation.new(:assign, name, expression)
+    statement.value = Operation.new(:assign, name, expression.value)
   end
 
   rule 'statement : expression' do |statement, expression|
