@@ -23,7 +23,7 @@ class Interpreter
     when :- then self.-(*tree.arguments)
     when :* then self.*(*tree.arguments)
     when :/ then self./(*tree.arguments)
-    # when :% then self.%(*tree.arguments)
+    when :% then self.%(*tree.arguments)
 
     # when :+ then self.+(*tree.arguments)
     else
@@ -47,9 +47,9 @@ class Interpreter
     evaluate(a) / evaluate(b)
   end
 
-  # def \%(a b)
-  #   evaluate(a) % evaluate(b)
-  # end
+  def %(a, b)
+    evaluate(a) % evaluate(b)
+  end
 
   def assign(name, value)
     puts "Interpreter: assign => name: #{name}, value: #{value}"

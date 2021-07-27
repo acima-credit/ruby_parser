@@ -40,6 +40,10 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:/, a.value, b.value)
   end
 
+  rule 'expression : expression "%" expression' do |expression, a, _operation, b|
+    expression.value = Operation.new(:%, a.value, b.value)
+  end
+
   rule 'expression : NAME' do |expression, name|
     puts "Parser: (expression : NAME) => name: #{name.inspect}"
     if ['quit', 'exit'].include?(name.value)
