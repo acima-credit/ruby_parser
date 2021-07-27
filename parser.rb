@@ -8,7 +8,7 @@ class Operation
   end
 
   def to_s
-    "#{operation} : #{arguments.join(', ')}"
+    "(#{operation}: #{arguments.join(', ')})"
   end
 end
 
