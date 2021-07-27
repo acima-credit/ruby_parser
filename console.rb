@@ -1,4 +1,5 @@
-require "rly"
+require 'rly'
+require 'pry'
 require "readline"
 require "./lexer"
 require "./parser"
