@@ -27,6 +27,6 @@ class Interpreter
 
   def number(number)
     puts "Interpreter: number => #{number.inspect}"
-    BigDecimal(number.value).to_i
+    BigDecimal(number)
   end
 end

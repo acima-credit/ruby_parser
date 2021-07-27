@@ -8,23 +8,24 @@ class Operation
   end
 
   def to_s
-    "(#{operation}: #{arguments.join(', ')})"
+    "<Operation: #{operation}: #{arguments.join(', ')}>"
   end
 end
 
 class Parser < Rly::Yacc
   rule 'statement : NAME "=" expression' do |statement, name, _, expression|
-    puts "Parser: (statement : NAME = expression) => name: #{name}, expression: #{expression}"
+    puts "Parser: (statement : NAME = expression) => name: #{name.inspect}, expression: #{expression.inspect}"
     statement.value = Operation.new(:assign, name, expression)
   end
 
   rule 'statement : expression' do |statement, expression|
-    puts "Parser: (statement : expression) => expression: #{expression}"
-    statement.value = Operation.new(:evaluate, expression)
+    puts "Parser: (statement : expression) => expression: #{expression.inspect}"
+
+    statement.value = Operation.new(:evaluate, expression.value)
   end
 
   rule 'expression : NAME' do |expression, name|
-    puts "Parser: (expression : NAME) => name: #{name}"
+    puts "Parser: (expression : NAME) => name: #{name.inspect}"
     if ['quit', 'exit'].include?(name.value)
       puts "Parser: NAME is 'quit' or 'exit'; quitting..."
       exit 0
@@ -34,7 +35,7 @@ class Parser < Rly::Yacc
   end
 
   rule 'expression : NUMBER' do |expression, number|
-    puts "Parser: (expression : NUMBER) => #{number}"
-    expression.value = Operation.new(:number, number)
+    puts "Parser: (expression : NUMBER) => #{number.inspect}"
+    expression.value = Operation.new(:number, number.value)
   end
 end
