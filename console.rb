@@ -22,6 +22,6 @@ puts
 
 while (buffer = Readline.readline("> ", true))
   parse_tree = parser.parse(buffer)
-  puts parse_tree
+  puts "Console: parser has parsed buffer, returning parse_tree: #{parse_tree}"
   puts interpreter.evaluate(parse_tree)
 end

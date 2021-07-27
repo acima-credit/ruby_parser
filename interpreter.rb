@@ -6,7 +6,7 @@ class Interpreter
   end
 
   def evaluate(tree)
-    puts "Interpreter#evaluate(tree): tree = #{tree.inspect}"
+    puts "Interpreter: evaluate(tree): tree: #{tree.inspect}"
     case tree.operation
     when :evaluate then evaluate(*tree.arguments)
     when :assign then assign(*tree.arguments)
@@ -16,14 +16,17 @@ class Interpreter
   end
 
   def assign(name, value)
+    puts "Interpreter: assign => name: #{name}, value: #{value}"
     @names[name.value] = evaluate(value)
   end
 
-  def lookup(token)
-    @names[token.value]
+  def lookup(name)
+    puts "Interpreter: name: #{name.inspect}"
+    @names[name.value]
   end
 
-  def number(token)
-    BigDecimal(token.value).to_i
+  def number(number)
+    puts "Interpreter: number => #{number.inspect}"
+    BigDecimal(number.value).to_i
   end
 end
