@@ -15,13 +15,29 @@ end
 class Parser < Rly::Yacc
   rule 'statement : NAME "=" expression' do |statement, name, _, expression|
     puts "Parser: (statement : NAME = expression) => name: #{name.inspect}, expression: #{expression.inspect}"
-    statement.value = Operation.new(:assign, name, expression.value)
+    statement.value = Operation.new(:assign, name.value, expression.value)
   end
 
   rule 'statement : expression' do |statement, expression|
     puts "Parser: (statement : expression) => expression: #{expression.inspect}"
 
     statement.value = Operation.new(:evaluate, expression.value)
+  end
+
+  rule 'expression : expression "+" expression' do |expression, a, _operation, b|
+    expression.value = Operation.new(:+, a.value, b.value)
+  end
+
+  rule 'expression : expression "-" expression' do |expression, a, _operation, b|
+    expression.value = Operation.new(:-, a.value, b.value)
+  end
+
+  rule 'expression : expression "*" expression' do |expression, a, _operation, b|
+    expression.value = Operation.new(:*, a.value, b.value)
+  end
+
+  rule 'expression : expression "/" expression' do |expression, a, _operation, b|
+    expression.value = Operation.new(:/, a.value, b.value)
   end
 
   rule 'expression : NAME' do |expression, name|
@@ -31,7 +47,7 @@ class Parser < Rly::Yacc
       exit 0
     end
 
-    expression.value = Operation.new(:lookup, name)
+    expression.value = Operation.new(:lookup, name.value)
   end
 
   rule 'expression : NUMBER' do |expression, number|
