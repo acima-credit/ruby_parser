@@ -3,6 +3,14 @@
 require 'rly'
 
 class Lexer < Rly::Lex
+  attr_reader :verbose
+
+  def initialize(verbose: false)
+    @verbose = verbose
+    puts "Lexer: Verbose lexing." if verbose
+    super()
+  end
+
   literals "+-*/%=^()"
   ignore " \t\n"
 

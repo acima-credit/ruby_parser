@@ -1,7 +1,11 @@
 require_relative 'scope'
 
 class Interpreter
-  def initialize
+  attr_reader :verbose
+
+  def initialize(verbose: false)
+    @verbose = verbose
+    puts "Intepreter: Verbose interpreting." if verbose
     # don't access scopes directly; use current_scope instead
     @scopes = []
     push_scope
@@ -21,6 +25,7 @@ class Interpreter
   end
 
   def evaluate(tree)
+    puts "Interpreter#evaluate: #{tree}" if verbose
     case tree.operation
     when :evaluate then evaluate(*tree.arguments)
     when :assign then assign(*tree.arguments)

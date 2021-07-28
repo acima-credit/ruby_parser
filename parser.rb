@@ -14,6 +14,14 @@ class Operation
 end
 
 class Parser < Rly::Yacc
+  attr_reader :verbose
+
+  def initialize(lexer:, verbose: false)
+    @verbose = verbose
+    puts "Parser: Verbose parsing." if verbose
+    super(lexer)
+  end
+
   precedence :left, '+', '-'
   precedence :left, '*', '/', '%'
   precedence :left, '^'
