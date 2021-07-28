@@ -8,7 +8,7 @@ class Lexer < Rly::Lex
 
   token :NUMBER, /\d+\.?\d*/
   token :NAME, /[a-zA-Z_]\w{2,}/ # variable names must be at least 3 characters
-  token :EQUALITY, /==+/
+  token :EQUALITY, /((!!)+=)|==+/
 
   on_error do |t|
     puts "Illegal character #{t.value}"

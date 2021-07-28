@@ -39,6 +39,8 @@ class Interpreter
     when :/ then self./(*tree.arguments)
     when :% then self.%(*tree.arguments)
     when :^ then self.^(*tree.arguments)
+
+    # boolean comparisons
     when :== then self.==(*tree.arguments)
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
