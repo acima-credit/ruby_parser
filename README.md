@@ -8,3 +8,4 @@ To use:
 
     bundle install
     bundle exec ruby console.rb
+
