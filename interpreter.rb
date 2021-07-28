@@ -42,6 +42,8 @@ class Interpreter
 
     # boolean comparisons
     when :== then self.==(*tree.arguments)
+    when :!= then self.!=(*tree.arguments)
+
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
@@ -73,6 +75,10 @@ class Interpreter
 
   def ==(a, b)
     evaluate(a) <=> evaluate(b)
+  end
+
+  def !=(a, b)
+    (evaluate(a) == evaluate(b)) ? 1 : 0
   end
 
   def assign(name, value)

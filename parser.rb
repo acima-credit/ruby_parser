@@ -72,4 +72,8 @@ class Parser < Rly::Yacc
   rule 'expression : expression EQUALITY expression' do |expression, a, _operation, b|
     expression.value = Operation.new(:==, a.value, b.value)
   end
+
+  rule 'expression : expression INEQUALITY expression' do |expression, a, _operation, b|
+    expression.value = Operation.new(:!=, a.value, b.value)
+  end
 end
