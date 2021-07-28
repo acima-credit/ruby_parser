@@ -68,4 +68,8 @@ class Parser < Rly::Yacc
   rule 'expression : NUMBER' do |expression, number|
     expression.value = Operation.new(:number, number.value.to_i)
   end
+
+  rule 'expression : expression EQUALITY expression' do |expression, a, _operation, b|
+    expression.value = Operation.new(:==, a.value, b.value)
+  end
 end
