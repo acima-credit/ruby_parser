@@ -1,6 +1,23 @@
+require_relative 'scope'
+
 class Interpreter
   def initialize
-    @names = {}
+    # don't access scopes directly; use current_scope instead
+    @scopes = []
+    push_scope
+  end
+
+  def push_scope
+    @scopes << Scope.new
+  end
+
+  def current_scope
+    @scopes.last
+  end
+
+  def pop_scope
+    # TODO: freak out if scope.size == 1, don't pop me bro
+    @scopes.pop
   end
 
   def evaluate(tree)
@@ -52,11 +69,11 @@ class Interpreter
   end
 
   def assign(name, value)
-    @names[name] = evaluate(value)
+    current_scope[name] = evaluate(value)
   end
 
   def lookup(name)
-    @names[name]
+    current_scope[name]
   end
 
   def number(number)
