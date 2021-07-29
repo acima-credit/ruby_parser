@@ -8,8 +8,8 @@ class Interpreter
       @loop_statements = []
     end
 
-    def copy(names = {})
-      new(@names.merge(names))
+    def copy
+      self.class.new(names.dup)
     end
   end
 
@@ -30,11 +30,11 @@ class Interpreter
     @call_stack.last
   end
 
-  def push_scope(names = {})
-    @call_stack.push(Scope.new(names))
+  def push_stack
+    @call_stack.push(current_scope.copy)
   end
 
-  def pop_scope
+  def pop_stack
     @call_stack.pop
   end
 
@@ -111,12 +111,14 @@ class Interpreter
   end
 
   def evaluate_function(function, values)
-    push_scope(current_scope.names)
-    function.params.each_with_index { |param, index| assign(param, evaluate(values[index])) }
+    within_new_scope do
+      function.params.each_with_index { |param, index| assign(param, evaluate(values[index])) }
+      evaluate(function.expression)
+    end
+  end
 
-    return_val = evaluate(function.expression)
-    pop_scope
-
-    return_val
+  def within_new_scope
+    push_stack
+    yield.tap { pop_stack }
   end
 end
