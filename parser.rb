@@ -74,12 +74,22 @@ class Parser < Rly::Yacc
   end
 
   rule 'parameter_list : parameter
-                       | parameter "," parameter_list' do |parameter_list, param|
-    binding.pry
-    parameter_list.value = param.value
+                       | parameter "," parameter_list' do |parameter_list, param, _comma, list|
+    parameter_list.value = Array(param.value) + Array(list&.value)
   end
 
-  rule 'expression : LAMBDA "|" parameter_list "|" expression' do |expression, _lambda, _lpipe, params, _rpipe, exp|
-    binding.pry
+  rule 'expression_list : expression
+                        | expression "," expression_list' do |expression_list, exp, _comma, list|
+    expression_list.value = Array(exp.value) + Array(list&.value)
+  end
+
+  rule 'expression : LAMBDA "\" parameter_list "\" expression
+                   | LAMBDA "." "." "." expression' do |expression, _lambda, _, params, _, exp|
+    params = [] if params == '.'
+    expression.value = Operation.new(:function, params, exp)
+  end
+
+  rule 'expression : NAME "[" expression_list "]"' do |expression, name, _lbracket, list, _rbracket|
+    expression.value = Operation.new(:lookup, name, list)
   end
 end

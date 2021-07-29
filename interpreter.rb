@@ -7,6 +7,19 @@ class Interpreter
       @loop_counter = 0
       @loop_statements = []
     end
+
+    def copy(names = {})
+      new(@names.merge(names))
+    end
+  end
+
+  class Function
+    attr_accessor :params, :expression
+
+    def initialize(params, expression)
+      @params = params
+      @expression = expression
+    end
   end
 
   def initialize
@@ -32,6 +45,7 @@ class Interpreter
     when :lookup then lookup(*tree.arguments)
     when :number then number(*tree.arguments)
     when :negate then negate(*tree.arguments)
+    when :function then function(*tree.arguments)
     # for binary operations, evaluate each arg (remember we only ever get them in pairs)
     # then do the operations on them, e.g. "a op b"
     #
@@ -77,8 +91,11 @@ class Interpreter
     current_scope.names[name] = evaluate(value)
   end
 
-  def lookup(name)
-    current_scope.names[name]
+  def lookup(name, values = [])
+    value = current_scope.names[name]
+    return evaluate_function(value, values) if value.is_a? Function
+
+    value
   end
 
   def number(number)
@@ -87,5 +104,19 @@ class Interpreter
 
   def negate(value)
     -1 * evaluate(value)
+  end
+
+  def function(params, expression)
+    Function.new(params, expression)
+  end
+
+  def evaluate_function(function, values)
+    push_scope(current_scope.names)
+    function.params.each_with_index { |param, index| assign(param, evaluate(values[index])) }
+
+    return_val = evaluate(function.expression)
+    pop_scope
+
+    return_val
   end
 end
