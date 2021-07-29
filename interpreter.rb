@@ -49,6 +49,9 @@ class Interpreter
     when :== then self.==(*tree.arguments)
     when :!= then self.!=(*tree.arguments)
 
+    # function
+    when :function then function(*tree.arguments)
+
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
@@ -100,5 +103,10 @@ class Interpreter
 
   def negate(value)
     -1 * evaluate(value)
+  end
+
+  def function(name, value)
+    puts "Interpreter#function: NAME, VALUE - #{name},#{value}" if verbose
+    current_scope[name] = value
   end
 end
