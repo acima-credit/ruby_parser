@@ -84,4 +84,15 @@ class Parser < Rly::Yacc
   rule 'expression : expression INEQUALITY expression' do |expression, a, _operation, b|
     expression.value = Operation.new(:!=, a.value, b.value)
   end
+
+  rule 'arg_list : NAME 
+                 | NAME "," arg_list' do |arg_list, name, _, agr_list|
+    puts "Parser: rule #{arg_list}, #{name}, #{agr_list}"
+  end
+
+  # &my_func(a, b) a + b
+  # our functions needs to be at least 3 letters name
+  rule 'expression : FUNCTION NAME "(" arg_list ")" expression' do |expression, _function_token, function_name, _, arg_list, _, function_body|
+    expression.value = Operation.new(:function, function_name, function_body.value)
+  end
 end
