@@ -1,6 +1,28 @@
 class Interpreter
+  class Scope
+    attr_accessor :names
+
+    def initialize(names = {})
+      @names = names
+      @loop_counter = 0
+      @loop_statements = []
+    end
+  end
+
   def initialize
-    @names = {}
+    @call_stack = [Scope.new]
+  end
+
+  def current_scope
+    @call_stack.last
+  end
+
+  def push_scope(names = {})
+    @call_stack.push(Scope.new(names))
+  end
+
+  def pop_scope
+    @call_stack.pop
   end
 
   def evaluate(tree)
@@ -52,11 +74,11 @@ class Interpreter
   end
 
   def assign(name, value)
-    @names[name] = evaluate(value)
+    current_scope.names[name] = evaluate(value)
   end
 
   def lookup(name)
-    @names[name]
+    current_scope.names[name]
   end
 
   def number(number)

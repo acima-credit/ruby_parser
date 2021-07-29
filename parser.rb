@@ -68,4 +68,18 @@ class Parser < Rly::Yacc
   rule 'expression : NUMBER' do |expression, number|
     expression.value = Operation.new(:number, number.value.to_i)
   end
+
+  rule 'parameter : NAME' do |parameter, name|
+    parameter.value = name.value
+  end
+
+  rule 'parameter_list : parameter
+                       | parameter "," parameter_list' do |parameter_list, param|
+    binding.pry
+    parameter_list.value = param.value
+  end
+
+  rule 'expression : LAMBDA "|" parameter_list "|" expression' do |expression, _lambda, _lpipe, params, _rpipe, exp|
+    binding.pry
+  end
 end
