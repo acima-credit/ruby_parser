@@ -8,7 +8,7 @@ class Interpreter
       @loop_statements = []
     end
 
-    def copy
+    def dup
       self.class.new(names.dup)
     end
   end
@@ -31,7 +31,7 @@ class Interpreter
   end
 
   def push_stack
-    @call_stack.push(current_scope.copy)
+    @call_stack.push(current_scope.dup)
   end
 
   def pop_stack
@@ -93,6 +93,7 @@ class Interpreter
 
   def lookup(name, values = [])
     value = current_scope.names[name]
+
     return evaluate_function(value, values) if value.is_a? Function
 
     value
@@ -112,12 +113,14 @@ class Interpreter
 
   def evaluate_function(function, values)
     within_new_scope do
-      function.params.each_with_index { |param, index| assign(param, evaluate(values[index])) }
+      function.params.each_with_index { |param, index| assign(param, values[index]) }
       evaluate(function.expression)
     end
   end
 
   def within_new_scope
+    return unless block_given?
+
     push_stack
     yield.tap { pop_stack }
   end

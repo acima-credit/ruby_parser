@@ -85,11 +85,11 @@ class Parser < Rly::Yacc
 
   rule 'expression : LAMBDA "\" parameter_list "\" expression
                    | LAMBDA "." "." "." expression' do |expression, _lambda, _, params, _, exp|
-    params = [] if params.value == '.'
-    expression.value = Operation.new(:function, params, exp.value)
+    list = params.value == '.' ? [] : params.value
+    expression.value = Operation.new(:function, list, exp.value)
   end
 
   rule 'expression : NAME "[" expression_list "]"' do |expression, name, _lbracket, list, _rbracket|
-    expression.value = Operation.new(:lookup, name, list)
+    expression.value = Operation.new(:lookup, name.value, list.value)
   end
 end
