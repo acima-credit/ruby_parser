@@ -43,7 +43,7 @@ if $0==__FILE__
   puts "'exit' to quit"
   puts
 
-  while (buffer = Readline.readline('> ', true))
+  while (buffer = Readline.readline('🎸  ', true))
     parse_tree = parser.parse(buffer)
     puts parse_tree if parser.verbose
     puts interpreter.evaluate(parse_tree)
