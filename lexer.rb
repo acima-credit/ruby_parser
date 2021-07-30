@@ -26,3 +26,13 @@ class Lexer < Rly::Lex
     nil
   end
 end
+
+
+# # define function
+# &abc(xyz, qpr) (xyz * qpr) + 7
+
+# # call function
+# abc((3+2), def(5))
+# NAME "(" NUMBER(3) "," NUMBER(5) ")"
+
+# 22

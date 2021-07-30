@@ -85,14 +85,27 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:!=, a.value, b.value)
   end
 
-  rule 'arg_list : NAME 
+  rule 'arg_list : NAME
                  | NAME "," arg_list' do |arg_list, name, _, agr_list|
-    puts "Parser: rule #{arg_list}, #{name}, #{agr_list}"
+    puts "Parser#arg_list: #{name.inspect} + #{agr_list.inspect}" if verbose
+    arg_list.value = Array(name) + Array(agr_list)
   end
 
+  # define function
   # &my_func(a, b) a + b
   # our functions needs to be at least 3 letters name
   rule 'expression : FUNCTION NAME "(" arg_list ")" expression' do |expression, _function_token, function_name, _, arg_list, _, function_body|
     expression.value = Operation.new(:function, function_name, function_body.value)
+  end
+
+  rule 'expression_list : expression
+                        | expression "," expression_list' do |expression_list, expression, _comma, rest|
+    puts "Parser#expression_list: #{expression.inspect} + #{rest.inspect}" if verbose
+    expression_list.value = Array(expression) + Array(rest)
+  end
+
+  # execute function
+  rule 'expression : NAME "(" expression_list ")"' do |expression, function_name, _lparen, expression_list, _rparen|
+    expression.value = Operation.new(:call_function, function_name, expression_list)
   end
 end

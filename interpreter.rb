@@ -105,8 +105,11 @@ class Interpreter
     -1 * evaluate(value)
   end
 
+  # define a function
   def function(name, value)
     puts "Interpreter#function: NAME, VALUE - #{name},#{value}" if verbose
     current_scope[name] = value
   end
+
+  # execute a function
 end
