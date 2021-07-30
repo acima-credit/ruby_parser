@@ -46,6 +46,7 @@ class Interpreter
     when :number then number(*tree.arguments)
     when :negate then negate(*tree.arguments)
     when :function then function(*tree.arguments)
+    when :list then list(*tree.arguments)
     # for binary operations, evaluate each arg (remember we only ever get them in pairs)
     # then do the operations on them, e.g. "a op b"
     #
@@ -113,7 +114,12 @@ class Interpreter
 
   def evaluate_function(function, values)
     within_new_scope do
-      function.params.each_with_index { |param, index| assign(param, values[index]) }
+      function.params.each_with_index do |param, index|
+        if param.chars.first == "ƒ"
+        else
+          assign(param, values[index])
+        end
+      end
       evaluate(function.expression)
     end
   end
@@ -123,5 +129,9 @@ class Interpreter
 
     push_stack
     yield.tap { pop_stack }
+  end
+
+  def list(array)
+    array
   end
 end

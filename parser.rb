@@ -69,7 +69,8 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:number, number.value.to_i)
   end
 
-  rule 'parameter : NAME' do |parameter, name|
+  rule 'parameter : NAME
+                  | FNAME ' do |parameter, name|
     parameter.value = name.value
   end
 
@@ -89,7 +90,19 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:function, list, exp.value)
   end
 
+  rule 'expression : "{" expression_list "}"' do |expression, _lcurly, expression_list, _rcurly|
+    expression.value = Operation.new(:list, expression_list.value)
+  end
+
   rule 'expression : NAME "[" expression_list "]"' do |expression, name, _lbracket, list, _rbracket|
     expression.value = Operation.new(:lookup, name.value, list.value)
   end
 end
+
+
+# foo = λ\func, num\ func[num]
+
+# bar = λ\baz\ baz + 1
+
+# foo[bar, 3]
+
