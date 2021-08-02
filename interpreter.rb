@@ -20,6 +20,10 @@ class Interpreter
       @params = params
       @expression = expression
     end
+
+    def dup
+      self.class.new(params.dup, expression.dup)
+    end
   end
 
   def initialize
@@ -100,6 +104,10 @@ class Interpreter
     value
   end
 
+  def function_lookup(operation)
+    current_scope.names[operation.arguments.first]
+  end
+
   def number(number)
     number
   end
@@ -116,6 +124,8 @@ class Interpreter
     within_new_scope do
       function.params.each_with_index do |param, index|
         if param.chars.first == "ƒ"
+          function_name = param[1..-1]
+          current_scope.names[function_name] = function_lookup(values[index])
         else
           assign(param, values[index])
         end

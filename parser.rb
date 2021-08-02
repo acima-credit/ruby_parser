@@ -100,7 +100,7 @@ class Parser < Rly::Yacc
 end
 
 
-# foo = λ\func, num\ func[num]
+# foo = λ\ƒfunc, num\ func[num]
 
 # bar = λ\baz\ baz + 1
 
