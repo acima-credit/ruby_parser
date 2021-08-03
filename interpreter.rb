@@ -69,7 +69,14 @@ class Interpreter
   end
 
   def +(a, b)
-    evaluate(a) + evaluate(b)
+    object_a = evaluate(a)
+    # Need to figure out how to get 2 list operation to interact
+    if object_a.is_a?
+      result = object_a.map { |index| Operation.new(:number, evaluate(index) + evaluate(b)) }
+      Operation.new(:list, result)
+    else
+      object_a + evaluate(b)
+    end
   end
 
   def -(a, b)
@@ -142,6 +149,6 @@ class Interpreter
   end
 
   def list(array)
-    array
+    Operation.new(:list, array)
   end
 end
