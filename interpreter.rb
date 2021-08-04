@@ -21,6 +21,10 @@ class Interpreter
       @expression = expression
     end
 
+    def arity
+      params.size
+    end
+
     def dup
       self.class.new(params.dup, expression.dup)
     end
@@ -51,6 +55,7 @@ class Interpreter
     when :negate then negate(*tree.arguments)
     when :function then function(*tree.arguments)
     when :list then list(*tree.arguments)
+    when :compose then compose(*tree.arguments)
     # for binary operations, evaluate each arg (remember we only ever get them in pairs)
     # then do the operations on them, e.g. "a op b"
     #
@@ -70,9 +75,8 @@ class Interpreter
 
   def +(a, b)
     object_a = evaluate(a)
-    # Need to figure out how to get 2 list operation to interact
-    if object_a.is_a?
-      result = object_a.map { |index| Operation.new(:number, evaluate(index) + evaluate(b)) }
+    if object_a.is_a?(Operation) && object_a.operation == :list
+      result = object_a.arguments.first.map {|op| Operation.new(:number, evaluate(op) + evaluate(b)) }
       Operation.new(:list, result)
     else
       object_a + evaluate(b)
@@ -150,5 +154,13 @@ class Interpreter
 
   def list(array)
     Operation.new(:list, array)
+  end
+
+  def compose(expression, name)
+    function = current_scope.names[name]
+    raise "function required" unless function.is_a?(Function)
+    binding.pry
+    result = expression.arguments.first.map {|value| Operation.new(:number, evaluate_function(function, Array(value))) }
+    Operation.new(:list,  result)
   end
 end
