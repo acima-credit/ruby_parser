@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rly'
+require 'colorize'
 
 # Lexer  ->  Parser  ->  Interpreter
 #  ^^          ^^            ^^ (Compiler)
@@ -28,19 +29,27 @@ class Rly::LexToken
 end
 
 class Lexer < Rly::Lex
-  literals "-*/%^"
+  literals "-/%^"
   ignore " \t\n\r"
 
   class <<self
     def logged_token(name, regexp)
       token name, regexp do |tok|
-        puts "Lexer: '#{tok}' -> #{tok.to_str}"
+        puts "Lexer: '#{tok}' -> #{tok.to_str}".black.on_green
         tok
       end
     end
   end
 
+  alias_method(:orig_next, :next)
+
+  def next
+    puts "Lexer: Lex.next() called".black.on_green
+    orig_next
+  end
+
   logged_token :PLUS, /\+/
+  logged_token :STAR, /\*/
   logged_token :EQUAL, /\=/
   logged_token :LPAREN, /\(/
   logged_token :RPAREN, /\)/
