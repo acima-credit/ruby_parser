@@ -33,18 +33,26 @@ class Lexer < Rly::Lex
   ignore " \t\n\r"
 
   class <<self
+    def log(msg)
+      puts "Lexer: #{msg}".black.on_green
+    end
+
     def logged_token(name, regexp)
       token name, regexp do |tok|
-        puts "Lexer: '#{tok}' -> #{tok.to_str}".black.on_green
+        log "'#{tok}' -> #{tok.to_str}"
         tok
       end
     end
   end
 
+  def log(msg)
+    self.class.log msg
+  end
+
   alias_method(:orig_next, :next)
 
   def next
-    puts "Lexer: Lex.next() called".black.on_green
+    log "Lex.next() called"
     orig_next
   end
 
