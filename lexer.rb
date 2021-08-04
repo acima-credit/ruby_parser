@@ -21,12 +21,31 @@ require 'rly'
 # > abc = 123   |
 # > abc * 2     |
 
+class Rly::LexToken
+  def to_str
+    "<#LexToken type=#{type}, value=#{value}>"
+  end
+end
+
 class Lexer < Rly::Lex
-  literals "+-*/%=^()"
+  literals "-*/%^"
   ignore " \t\n\r"
 
-  token :NUMBER, /\d+\.?\d*/
-  token :NAME, /[a-zA-Z_]\w{2,}/ # variable names must be at least 3 characters
+  class <<self
+    def logged_token(name, regexp)
+      token name, regexp do |tok|
+        puts "Lexer: '#{tok}' -> #{tok.to_str}"
+        tok
+      end
+    end
+  end
+
+  logged_token :PLUS, /\+/
+  logged_token :EQUAL, /\=/
+  logged_token :LPAREN, /\(/
+  logged_token :RPAREN, /\)/
+  logged_token :NUMBER, /\d+\.?\d*/
+  logged_token :NAME, /[a-zA-Z_]\w{2,}/ # variable names must be at least 3 characters
 
   on_error do |t|
     puts "Illegal character #{t.value}"
