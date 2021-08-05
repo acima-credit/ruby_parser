@@ -30,6 +30,5 @@ puts
 
 while (buffer = Readline.readline('> ', true))
   parse_tree = parser.parse(buffer)
-  puts parse_tree
   puts interpreter.evaluate(parse_tree)
 end
