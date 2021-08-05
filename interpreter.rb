@@ -3,7 +3,16 @@ class Interpreter
     @names = {}
   end
 
+  def self.log(msg)
+    puts "Interpreter: #{msg}".black.on_light_magenta
+  end
+
+  def log(msg)
+    self.class.log msg
+  end
+
   def evaluate(tree)
+    log "evaluating: #{tree}"
     case tree.operation
     when :evaluate then evaluate(*tree.arguments)
     when :assign then assign(*tree.arguments)
