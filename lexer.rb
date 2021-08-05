@@ -29,7 +29,7 @@ class Rly::LexToken
 end
 
 class Lexer < Rly::Lex
-  literals "/%^"
+  literals ""
   ignore " \t\n\r"
 
   class <<self
@@ -60,6 +60,9 @@ class Lexer < Rly::Lex
   logged_token :PLUS, /\+/
   logged_token :HYPHEN, /\-/
   logged_token :STAR, /\*/
+  logged_token :SLASH, /\//
+  logged_token :PERCENT, /%/
+  logged_token :CARET, /\^/
   logged_token :EQUAL, /\=/
   logged_token :LPAREN, /\(/
   logged_token :RPAREN, /\)/

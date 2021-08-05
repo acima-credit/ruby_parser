@@ -63,15 +63,18 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:*, a.value, b.value)
   end
 
-  rule 'expression : expression "/" expression' do |expression, a, _operation, b|
+  rule 'expression : expression SLASH expression' do |expression, a, _operation, b|
+    log "expression : expression SLASH expression -> (:+, #{a.value}, #{b.value})"
     expression.value = Operation.new(:/, a.value, b.value)
   end
 
-  rule 'expression : expression "%" expression' do |expression, a, _operation, b|
+  rule 'expression : expression PERCENT expression' do |expression, a, _operation, b|
+    log "expression : expression PERCENT expression -> (:+, #{a.value}, #{b.value})"
     expression.value = Operation.new(:%, a.value, b.value)
   end
 
-  rule 'expression : expression "^" expression' do |expression, a, _operation, b|
+  rule 'expression : expression CARET expression' do |expression, a, _operation, b|
+    log "expression : expression CARET expression -> (:+, #{a.value}, #{b.value})"
     expression.value = Operation.new(:^, a.value, b.value)
   end
 
@@ -87,8 +90,10 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:number, number.value.to_i)
   end
 
-  rule 'statement : expression expression' do |statement, expression_1, expression_2|
-    log "statement : expression expression -> ??? expression_1 = #{expression_1.value}, expression_2 = #{expression_2.value}"
-    fail "You can't do that."
-  end
+  # This isn't a valid program fragment, but it crashes the parser HARD. Adding
+  # this rule temporarily to debug and understand
+  # rule 'statement : expression expression' do |statement, expression_1, expression_2|
+  #   log "statement : expression expression -> ??? expression_1 = #{expression_1.value}, expression_2 = #{expression_2.value}"
+  #   fail "You can't do that."
+  # end
 end
