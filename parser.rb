@@ -15,13 +15,14 @@ class Operation
 end
 
 class Parser < Rly::Yacc
-  precedence :left, :PLUS, '-'
+  precedence :left, :PLUS, :HYPHEN
   precedence :left, :STAR, '/', '%'
   precedence :left, '^'
   precedence :right, :UMINUS
 
   def self.log(msg)
-    puts "Parser: #{msg}".black.on_blue
+    $stdout.puts "Parser: #{msg}".black.on_cyan
+    $stdout.flush
   end
 
   def log(msg)
@@ -38,7 +39,8 @@ class Parser < Rly::Yacc
     statement.value = Operation.new(:evaluate, expression.value)
   end
 
-  rule 'expression : "-" expression %prec UMINUS' do |expression, _neg, exp|
+  rule 'expression : HYPHEN expression %prec UMINUS' do |expression, _neg, exp|
+    log "expression : HYPHEN expression %prec UMINUS -> (:negate, #{exp.value})"
     expression.value = Operation.new(:negate, exp.value)
   end
 
@@ -52,7 +54,7 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:+, a.value, b.value)
   end
 
-  rule 'expression : expression "-" expression' do |expression, a, _operation, b|
+  rule 'expression : expression HYPHEN expression' do |expression, a, _operation, b|
     expression.value = Operation.new(:-, a.value, b.value)
   end
 
@@ -83,5 +85,10 @@ class Parser < Rly::Yacc
   rule 'expression : NUMBER' do |expression, number|
     log "expression : NUMBER -> (:number, #{number.value.to_i})"
     expression.value = Operation.new(:number, number.value.to_i)
+  end
+
+  rule 'statement : expression expression' do |statement, expression_1, expression_2|
+    log "statement : expression expression -> ??? expression_1 = #{expression_1.value}, expression_2 = #{expression_2.value}"
+    fail "You can't do that."
   end
 end
