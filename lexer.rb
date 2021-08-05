@@ -29,12 +29,13 @@ class Rly::LexToken
 end
 
 class Lexer < Rly::Lex
-  literals "-/%^"
+  literals "/%^"
   ignore " \t\n\r"
 
   class <<self
     def log(msg)
-      puts "Lexer: #{msg}".black.on_green
+      $stdout.puts "Lexer: #{msg}".black.on_green
+      $stdout.flush
     end
 
     def logged_token(name, regexp)
@@ -57,6 +58,7 @@ class Lexer < Rly::Lex
   end
 
   logged_token :PLUS, /\+/
+  logged_token :HYPHEN, /\-/
   logged_token :STAR, /\*/
   logged_token :EQUAL, /\=/
   logged_token :LPAREN, /\(/

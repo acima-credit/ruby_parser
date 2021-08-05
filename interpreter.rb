@@ -4,7 +4,8 @@ class Interpreter
   end
 
   def self.log(msg)
-    puts "Interpreter: #{msg}".black.on_light_magenta
+    $stdout.puts "Interpreter: #{msg}".black.on_light_magenta
+    $stdout.flush
   end
 
   def log(msg)
@@ -32,7 +33,8 @@ class Interpreter
     when :% then self.%(*tree.arguments)
     when :^ then self.^(*tree.arguments)
     else
-      puts "I don't know how to handle operation '#{tree.operation}'!"
+      $stdout.puts "I don't know how to handle operation '#{tree.operation}'!"
+      $stdout.flush
     end
   end
 
