@@ -10,7 +10,7 @@ class Lexer < Rly::Lex
   token :NAME, /[a-zA-Z_]\w{2,}/ # variable names must be at least 3 characters
   token :FNAME, /ƒ[a-zA-Z_]\w{2,}/ # function name must be at least 3 characters
   token :LAMBDA, /λ/
-  tokem :COMPOSE, /∘/
+  token :COMPOSE, /∘/
 
   on_error do |t|
     puts "Illegal character #{t.value}"

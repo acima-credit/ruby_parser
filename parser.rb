@@ -98,10 +98,15 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:lookup, name.value, list.value)
   end
 
+  rule 'compose_list : COMPOSE NAME
+                     | COMPOSE NAME compose_list' do |compose_list, _compose, name, list|
+    compose_list.value = Array(name.value) + Array(list&.value)
+  end
+
   # {1,2,3} ∘ apple ∘ banana
   # Let's get this working ^
-  rule 'expression : expression COMPOSE NAME' do |expression, exp, _compose, name|
-    expression.value = Operation.new(:compose, exp.value, name.value)
+  rule 'expression : expression compose_list' do |expression, exp, list|
+    expression.value = Operation.new(:compose, exp.value, list.value)
   end
 end
 

@@ -156,11 +156,15 @@ class Interpreter
     Operation.new(:list, array)
   end
 
-  def compose(expression, name)
+  def compose(expression, function_names)
+    return expression if function_names.empty?
+
+    name = function_names.shift
     function = current_scope.names[name]
     raise "function required" unless function.is_a?(Function)
-    binding.pry
     result = expression.arguments.first.map {|value| Operation.new(:number, evaluate_function(function, Array(value))) }
-    Operation.new(:list,  result)
+    expression = Operation.new(:list,  result)
+
+    compose(expression, function_names)
   end
 end
