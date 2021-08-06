@@ -1,11 +1,15 @@
 class Interpreter
+  Error                 = Class.new(StandardError)
+  UnknownOperationError = Class.new(Error)
+  OperationTypeError    = Class.new(Error)
+  FunctionTypeError     = Class.new(Error)
+  ListTypeError         = Class.new(Error)
+
   class Scope
     attr_accessor :names
 
     def initialize(names = {})
       @names = names
-      @loop_counter = 0
-      @loop_statements = []
     end
 
     def dup
@@ -47,6 +51,8 @@ class Interpreter
   end
 
   def evaluate(tree)
+    type_check!(tree, Operation, OperationTypeError)
+
     case tree.operation
     when :evaluate then evaluate(*tree.arguments)
     when :assign then assign(*tree.arguments)
@@ -56,12 +62,7 @@ class Interpreter
     when :function then function(*tree.arguments)
     when :list then list(*tree.arguments)
     when :compose then compose(*tree.arguments)
-    # for binary operations, evaluate each arg (remember we only ever get them in pairs)
-    # then do the operations on them, e.g. "a op b"
-    #
-    # when :+,:-,:*,:/ then tree.arguments.map(&method(:evaluate)).reduce(&tree.operation)
 
-    # ^^ this is logically equivalent to the simpler, explicit code of:
     when :+ then self.+(*tree.arguments)
     when :- then self.-(*tree.arguments)
     when :* then self.*(*tree.arguments)
@@ -69,38 +70,72 @@ class Interpreter
     when :% then self.%(*tree.arguments)
     when :^ then self.^(*tree.arguments)
     else
-      puts "I don't know how to handle operation '#{tree.operation}'!"
+      raise UnknownOperationError, tree.operation
     end
+  rescue Error => e
+    puts "error: #{e.class} - #{e.message}"
+  rescue StandardError => e
+    puts "oops #{e.message}"
   end
 
-  def +(a, b)
-    object_a = evaluate(a)
-    if object_a.is_a?(Operation) && object_a.operation == :list
-      result = object_a.arguments.first.map {|op| Operation.new(:number, evaluate(op) + evaluate(b)) }
+  def +(aaa, bbb)
+    value = evaluate(aaa)
+    if value.is_a?(Operation) && value.list?
+      result = value.map { |op| Operation.new(:number, evaluate(op) + evaluate(bbb)) }
       Operation.new(:list, result)
     else
-      object_a + evaluate(b)
+      value + evaluate(bbb)
     end
   end
 
-  def -(a, b)
-    evaluate(a) - evaluate(b)
+  def -(aaa, bbb)
+    value = evaluate(aaa)
+    if value.is_a?(Operation) && value.list?
+      result = value.map { |op| Operation.new(:number, evaluate(op) - evaluate(bbb)) }
+      Operation.new(:list, result)
+    else
+      value - evaluate(bbb)
+    end
   end
 
-  def *(a, b)
-    evaluate(a) * evaluate(b)
+  def *(aaa, bbb)
+    value = evaluate(aaa)
+    if value.is_a?(Operation) && value.list?
+      result = value.map { |op| Operation.new(:number, evaluate(op) * evaluate(bbb)) }
+      Operation.new(:list, result)
+    else
+      value * evaluate(bbb)
+    end
   end
 
-  def /(a, b)
-    evaluate(a) / evaluate(b)
+  def /(aaa, bbb)
+    value = evaluate(aaa)
+    if value.is_a?(Operation) && value.list?
+      result = value.map { |op| Operation.new(:number, evaluate(op) / evaluate(bbb)) }
+      Operation.new(:list, result)
+    else
+      value / evaluate(bbb)
+    end
   end
 
-  def %(a, b)
-    evaluate(a) % evaluate(b)
+  def %(aaa, bbb)
+    value = evaluate(aaa)
+    if value.is_a?(Operation) && value.list?
+      result = value.map { |op| Operation.new(:number, evaluate(op) % evaluate(bbb)) }
+      Operation.new(:list, result)
+    else
+      value % evaluate(bbb)
+    end
   end
 
-  def ^(a, b)
-    evaluate(a) ** evaluate(b)
+  def ^(aaa, bbb)
+    value = evaluate(aaa)
+    if value.is_a?(Operation) && value.list?
+      result = value.map { |op| Operation.new(:number, evaluate(op) ** evaluate(bbb)) }
+      Operation.new(:list, result)
+    else
+      value ** evaluate(bbb)
+    end
   end
 
   def assign(name, value)
@@ -116,7 +151,7 @@ class Interpreter
   end
 
   def function_lookup(operation)
-    current_scope.names[operation.arguments.first]
+    current_scope.names[operation.argument]
   end
 
   def number(number)
@@ -134,8 +169,8 @@ class Interpreter
   def evaluate_function(function, values)
     within_new_scope do
       function.params.each_with_index do |param, index|
-        if param.chars.first == "ƒ"
-          function_name = param[1..-1]
+        if param.chars.first == 'ƒ'
+          function_name = param[1..]
           current_scope.names[function_name] = function_lookup(values[index])
         else
           assign(param, values[index])
@@ -149,7 +184,9 @@ class Interpreter
     return unless block_given?
 
     push_stack
-    yield.tap { pop_stack }
+    yield.tap do
+      pop_stack
+    end
   end
 
   def list(array)
@@ -157,14 +194,73 @@ class Interpreter
   end
 
   def compose(expression, function_names)
-    return expression if function_names.empty?
+    list = evaluate(expression)
+    type_check!(list, Operation, OperationTypeError)
+
+    return list if function_names.empty?
 
     name = function_names.shift
-    function = current_scope.names[name]
-    raise "function required" unless function.is_a?(Function)
-    result = expression.arguments.first.map {|value| Operation.new(:number, evaluate_function(function, Array(value))) }
-    expression = Operation.new(:list,  result)
+    expression =
+      case name
+      when 'first' then first(list)
+      when 'rest' then rest(list)
+      when 'last' then last(list)
+      when 'max' then max(list)
+      when 'min' then min(list)
+      when 'sort' then sort(list)
+      when 'sample' then sample(list)
+      when 'shuffle' then shuffle(list)
+      else compose_function(list, name)
+      end
 
     compose(expression, function_names)
+  end
+
+  def compose_function(list, name)
+    function = current_scope.names[name]
+    type_check!(function, Function, FunctionTypeError)
+
+    result = list.map { |value| Operation.new(:number, evaluate_function(function, Array(value))) }
+
+    Operation.new(:list, result)
+  end
+
+  def type_check!(value, type, error)
+    raise error, value.inspect unless value.is_a?(type)
+  end
+
+  def first(list)
+    Operation.new(:list, Array(list.argument.first))
+  end
+
+  def rest(list)
+    Operation.new(:list, list.argument[1..])
+  end
+
+  def last(list)
+    Operation.new(:list, Array(list.argument.last))
+  end
+
+  def max(list)
+    sorted = list.argument.sort { |a, b| a.argument <=> b.argument }
+    Operation.new(:list, Array(sorted.last))
+  end
+
+  def min(list)
+    sorted = list.argument.sort { |a, b| a.argument <=> b.argument }
+    Operation.new(:list, Array(sorted.first))
+  end
+
+  def sort(list)
+    sorted = list.argument.sort { |a, b| a.argument <=> b.argument }
+    Operation.new(:list, sorted)
+  end
+
+  def sample(list)
+    Operation.new(:list, Array(list.argument.sample))
+  end
+
+  def shuffle(list)
+    Operation.new(:list, list.argument.shuffle)
   end
 end
