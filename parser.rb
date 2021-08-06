@@ -17,6 +17,10 @@ class Operation
     operation == :list
   end
 
+  def function?
+    operation == :function
+  end
+
   def to_s
     "(#{operation}: #{arguments.join(', ')})"
   end
@@ -121,7 +125,7 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:lookup, name.value, list.value)
   end
 
-  rule 'compose_list : COMPOSE NAME | COMPOSE NAME compose_list'\
+  rule 'compose_list : COMPOSE NAME | COMPOSE math_compose | COMPOSE NAME compose_list | COMPOSE math_compose compose_list'\
   do |compose_list, _compose, name, list|
     compose_list.value = Array(name.value) + Array(list&.value)
   end
@@ -130,4 +134,25 @@ class Parser < Rly::Yacc
   do |expression, exp, list|
     expression.value = Operation.new(:compose, exp.value, list.value)
   end
+
+  rule 'math_compose :
+      "|" "+" NUMBER "|"
+    | "|" "-" NUMBER "|"
+    | "|" "*" NUMBER "|"
+    | "|" "/" NUMBER "|"
+    | "|" "%" NUMBER "|"
+    | "|" "^" NUMBER "|"'\
+  do |compose, _lpipe, operator, number, _rpipe|
+    expression = Operation.new(operator.value.to_sym, Operation.new(:lookup, 'abc'), Operation.new(:number, number.value.to_i))
+    compose.value = Operation.new(:function, 'abc', expression)
+  end
 end
+
+# <Operation:0x00007f829914d660
+#  @argument=#<Operation:0x00007f829914ea10 @argument="abc", @arguments=["abc"], @operation=:lookup>,
+#  @arguments=[#<Operation:0x00007f829914ea10 @argument="abc", @arguments=["abc"], @operation=:lookup>, #<Operation:0x00007f829914dc00 @argument=2, @arguments=[2], @operation=:number>],
+#  @operation=:+>
+# <Operation:0x00007fd5f10d3120
+# @argument=#<Operation:0x00007fd5f10d3238 @argument=["abc"], @arguments=[["abc"]], @operation=:lookup>,
+# @arguments=[#<Operation:0x00007fd5f10d3238 @argument=["abc"], @arguments=[["abc"]], @operation=:lookup>, #<Operation:0x00007fd5f10d31c0 @argument=2, @arguments=[2], @operation=:number>],
+# @operation=:+>

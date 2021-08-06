@@ -3,7 +3,7 @@
 require 'rly'
 
 class Lexer < Rly::Lex
-  literals '+-*/%=^()\\,.[]{}'
+  literals '+-*/%=^()\\,.[]{}|'
   ignore " \t\n"
 
   token :NUMBER, /\d+\.?\d*/
