@@ -55,21 +55,22 @@ class Parser < Rly::Yacc
   end
 
   rule 'expression : expression HYPHEN expression' do |expression, a, _operation, b|
+    log "expression : expression HYPHEN expression -> (:-, #{a.value}, #{b.value})"
     expression.value = Operation.new(:-, a.value, b.value)
   end
 
   rule 'expression : expression STAR expression' do |expression, a, _operation, b|
-    log "expression : expression STAR expression -> (:+, #{a.value}, #{b.value})"
+    log "expression : expression STAR expression -> (:*, #{a.value}, #{b.value})"
     expression.value = Operation.new(:*, a.value, b.value)
   end
 
   rule 'expression : expression SLASH expression' do |expression, a, _operation, b|
-    log "expression : expression SLASH expression -> (:+, #{a.value}, #{b.value})"
+    log "expression : expression SLASH expression -> (:/, #{a.value}, #{b.value})"
     expression.value = Operation.new(:/, a.value, b.value)
   end
 
   rule 'expression : expression PERCENT expression' do |expression, a, _operation, b|
-    log "expression : expression PERCENT expression -> (:+, #{a.value}, #{b.value})"
+    log "expression : expression PERCENT expression -> (:%, #{a.value}, #{b.value})"
     expression.value = Operation.new(:%, a.value, b.value)
   end
 
