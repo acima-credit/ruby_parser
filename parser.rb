@@ -15,57 +15,25 @@ end
 
 class Parser < Rly::Yacc
   precedence :left, '+', '-'
-  precedence :left, '*', '/', '%'
-  precedence :left, '^'
-  precedence :right, :UMINUS
-
-  rule 'statement : NAME "=" expression' do |statement, name, _, expression|
-    statement.value = Operation.new(:assign, name.value, expression.value)
-  end
+  precedence :left, '*', '/'
 
   rule 'statement : expression' do |statement, expression|
     statement.value = Operation.new(:evaluate, expression.value)
   end
 
-  rule 'expression : "-" expression %prec UMINUS' do |expression, _neg, exp|
-    expression.value = Operation.new(:negate, exp.value)
-  end
-
-  rule 'expression : "(" expression ")"' do |expression, _lparen, exp, _rparen|
-    expression.value = exp.value
-  end
-
-  rule 'expression : expression "+" expression' do |expression, a, _operation, b|
-    expression.value = Operation.new(:+, a.value, b.value)
-  end
-
-  rule 'expression : expression "-" expression' do |expression, a, _operation, b|
-    expression.value = Operation.new(:-, a.value, b.value)
-  end
-
-  rule 'expression : expression "*" expression' do |expression, a, _operation, b|
-    expression.value = Operation.new(:*, a.value, b.value)
-  end
-
-  rule 'expression : expression "/" expression' do |expression, a, _operation, b|
-    expression.value = Operation.new(:/, a.value, b.value)
-  end
-
-  rule 'expression : expression "%" expression' do |expression, a, _operation, b|
-    expression.value = Operation.new(:%, a.value, b.value)
-  end
-
-  rule 'expression : expression "^" expression' do |expression, a, _operation, b|
-    expression.value = Operation.new(:^, a.value, b.value)
-  end
-
-  rule 'expression : NAME' do |expression, name|
-    exit(0) if %w[quit exit].include?(name.value)
-
-    expression.value = Operation.new(:lookup, name.value)
-  end
-
   rule 'expression : NUMBER' do |expression, number|
-    expression.value = Operation.new(:number, number.value.to_i)
+    expression.value = Operation.new(:number, number.value)
   end
+
+  rule 'expression : expression "+" expression' do |expression, number_a, operator, number_b|
+    expression.value = Operation.new(:+, number_a.value, number_b.value)
+  end
+
+  # NOTES:  we discusses about how the parser reads the expressions from right to left and from bottom-top and clarify a lot of the questions
+  # We notice we need to add an operator in the interpreter for the CASE like "when :+ then number(*tree.arguments)" We are missin the then s tatement though"
+  # Things to be done:
+  # -arithmetic functions
+  # -parenthesis
+  # -variable assignment
+
 end
