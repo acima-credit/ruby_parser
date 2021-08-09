@@ -10,6 +10,8 @@ class Interpreter
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
+  rescue
+    "that didn't work!!!"
   end
 
   def number(number)
