@@ -25,23 +25,23 @@ class Parser < Rly::Yacc
     statement.value = Operation.new(:number, expression.value)
   end
 
-  rule 'expression : "+" expression' do |statement, expression|
-    statement.value = Operation.new(:number, expression.value)
+  rule 'expression : expression "+" expression' do |expression, value_one, _operation, value_two|
+    expression.value = Operation.new(:+, value_one.value, value_two.value)
   end
 
-  rule 'expression : "-"' do |statement, expression|
-    statement.value = Operation.new(:number, expression.value)
-  end
+  # rule 'expression : "-" expression' do |statement, expression|
+  #   expression.value = Operation.new(:-, expression.value)
+  # end
 
-  rule 'expression : "*"' do |statement, expression|
-    statement.value = Operation.new(:number, expression.value)
-  end
+  # rule 'expression : "*" expression' do |statement, expression|
+  #   expression.value = Operation.new(:number, expression.value)
+  # end
 
-  rule 'expression : "x"' do |statement, expression|
-    statement.value = Operation.new(:number, expression.value)
-  end
+  # rule 'expression : "x" expression' do |statement, expression|
+  #   expression.value = Operation.new(:number, expression.value)
+  # end
 
-  rule 'expression : "/"' do |statement, expression|
-    statement.value = Operation.new(:number, expression.value)
-  end
+  # rule 'expression : "/" expression' do |statement, expression|
+  #   expression.value = Operation.new(:number, expression.value)
+  # end
 end
