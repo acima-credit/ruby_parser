@@ -3,7 +3,7 @@
 require 'rly'
 
 class Lexer < Rly::Lex
-  literals ""
+  literals "+-*/"
   ignore " \t\n\r"
 
   token :NUMBER, /\d+\.?\d*/
@@ -15,3 +15,12 @@ class Lexer < Rly::Lex
     nil
   end
 end
+
+
+# NUMBER arithmetic_f NUMBER
+# arithmetic_f NUMBER  NUMBER
+# NUMBER  NUMBER arithmetic_f
+
+# 5 + 5
+# + 5 5
+# 5 5 +

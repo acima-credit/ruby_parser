@@ -21,7 +21,19 @@ class Parser < Rly::Yacc
     statement.value = Operation.new(:evaluate, expression.value)
   end
 
-  rule 'expression : NUMBER' do |statement, expression|
-    statement.value = Operation.new(:number, expression.value)
+  rule 'expression : NUMBER' do |expression, number|
+    expression.value = Operation.new(:number, number.value)
   end
+
+  rule 'expression : expression "+" expression' do |expression, number_a, operator, number_b|
+    expression.value = Operation.new(:+, number_a.value, number_b.value)
+  end
+
+  # NOTES:  we discusses about how the parser reads the expressions from right to left and from bottom-top and clarify a lot of the questions
+  # We notice we need to add an operator in the interpreter for the CASE like "when :+ then number(*tree.arguments)" We are missin the then s tatement though"
+  # Things to be done:
+  # -arithmetic functions
+  # -parenthesis
+  # -variable assignment
+
 end
