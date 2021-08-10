@@ -33,6 +33,7 @@ class Interpreter
     when :% then modulo(*tree.arguments)
     when :/ then divide(*tree.arguments)
     when :^ then exponentiate(*tree.arguments)
+    when :negate then negate(*tree.arguments)
     else
       raise UnknownOperationError, tree.operation
     end
@@ -79,5 +80,9 @@ class Interpreter
 
   def exponentiate(value1, value2)
     evaluate(value1) ** evaluate(value2)
+  end
+
+  def negate(value1)
+    evaluate(value1) * -1
   end
 end
