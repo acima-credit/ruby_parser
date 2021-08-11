@@ -3,17 +3,17 @@ class Interpreter
   UnknownOperationError = Class.new(Error)
   BadDivisionError = Class.new(Error)
 
-  # class Scope
-  #   attr_accessor :names
+  class Scope
+    attr_accessor :names
 
-  #   def initialize(names = {})
-  #     @names = names
-  #   end
+    def initialize(names = {})
+      @names = names
+    end
 
-  #   def dup
-  #     self.class.new(names.dup)
-  #   end
-  # end
+    def dup
+      self.class.new(names.dup)
+    end
+  end
 
   attr_accessor :names
 
@@ -26,6 +26,7 @@ class Interpreter
     when :evaluate then evaluate(*tree.arguments)
     when :number then number(*tree.arguments)
     when :assignment then assign(*tree.arguments)
+    when :function then function(*tree.arguments)
     when :lookup then lookup(*tree.arguments)
     when :+ then add(*tree.arguments)
     when :- then subtract(*tree.arguments)
@@ -53,6 +54,10 @@ class Interpreter
 
   def lookup(name)
     names[name]
+  end
+
+  def function(expression, params=[])
+    { expression: expression, params: params }
   end
 
   def add(value1, value2)

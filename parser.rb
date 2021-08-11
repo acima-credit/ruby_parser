@@ -36,6 +36,10 @@ class Parser < Rly::Yacc
 
     expression.value = Operation.new(:lookup, name.value)
   end
+  
+  rule 'expression : "(" expression ")"' do |expression, _left, exp, _right|
+    expression.value = exp.value
+  end
 
   rule 'expression : "-" expression %prec NEGATIVE'\
   do |expression, _neg, exp|
@@ -64,5 +68,24 @@ class Parser < Rly::Yacc
 
   rule 'expression : expression "^" expression' do |expression, a, _exponent, b|
     expression.value = Operation.new(:^, a.value, b.value)
+  end
+
+  rule 'parameter : NAME'\
+  do |parameter, name|
+    parameter.value = name.value
+  end
+
+  rule 'parameter_list : parameter | parameter "," parameter_list'\
+  do |parameter_list, param, _comma, list|
+    parameter_list.value = Array(param.value) + Array(list&.value)
+  end
+
+  rule 'expression : "(" ")" FUNCTION expression' do |expression, _lp, _rp, _func, exp|
+    expression.value = Operation.new(:function, exp.value)
+  end
+
+  rule 'expression : "(" parameter_list ")" FUNCTION expression'\
+  do |expression, _lp, params, _rp, _func, exp|
+    expression.value = Operation.new(:function, exp.value, params.value)
   end
 end
