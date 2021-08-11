@@ -16,6 +16,11 @@ end
 class Parser < Rly::Yacc
   precedence :left, '+', '-'
   precedence :left, '*', '/'
+  precedence :left, '%', '^'
+
+  rule 'statement : NAME "=" expression' do |statement, name, equals, expression|
+    statement.value = Operation.new(:assign, name.value, expression.value)
+  end
 
   rule 'statement : expression' do |statement, expression|
     statement.value = Operation.new(:evaluate, expression.value)
@@ -27,6 +32,26 @@ class Parser < Rly::Yacc
 
   rule 'expression : expression "+" expression' do |expression, number_a, operator, number_b|
     expression.value = Operation.new(:+, number_a.value, number_b.value)
+  end
+
+  rule 'expression : expression "-" expression' do |expression, number_a, operator, number_b|
+    expression.value = Operation.new(:-, number_a.value, number_b.value)
+  end
+
+  rule 'expression : expression "*" expression' do |expression, number_a, operator, number_b|
+    expression.value = Operation.new(:*, number_a.value, number_b.value)
+  end
+
+  rule 'expression : expression "/" expression' do |expression, number_a, operator, number_b|
+    expression.value = Operation.new(:/, number_a.value, number_b.value)
+  end
+
+  rule 'expression : expression "%" expression' do |expression, number_a, operator, number_b|
+    expression.value = Operation.new(:%, number_a.value, number_b.value)
+  end
+
+  rule 'expression : expression "^" expression' do |expression, number_a, operator, number_b|
+    expression.value = Operation.new(:^, number_a.value, number_b.value)
   end
 
   # NOTES:  we discusses about how the parser reads the expressions from right to left and from bottom-top and clarify a lot of the questions
