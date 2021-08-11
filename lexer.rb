@@ -10,13 +10,14 @@ class Lexer < Rly::Lex
     $stdout.puts "Lexer: #{msg}".black.on_green
     $stdout.flush
   end
+
   def log(msg)
     self.class.log(msg)
   end
 
   def self.logged_token(name, regexp)
     token name, regexp do |tok|
-      log "'#{tok}' --> #{tok.to_s}"
+      log "'#{tok}' --> (#{tok.to_s}, #{tok.type})"
       tok
     end
   end

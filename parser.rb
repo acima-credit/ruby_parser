@@ -31,7 +31,7 @@ class Parser < Rly::Yacc
   # Exit by sending to interpreter, ignoring _close param
   rule 'statement : CLOSE_TOOLBOX' do |statement, _close|
     log "statement : CLOSE_TOOLBOX --> #{_close.value}"
-    statement.value = Operation.new(:exit)
+    statement.value = Operation.new(:close)
   end
 
   rule 'statement : expression' do |statement, expression|
@@ -82,6 +82,6 @@ class Parser < Rly::Yacc
 
   rule 'expression : NAME' do |expression, name|
     log "expression : NAME --> #{name.inspect}"
-    expression.value = Operation.new(:name, name.value)
+    expression.value = Operation.new(:lookup, name.value)
   end
 end
