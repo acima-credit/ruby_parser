@@ -15,7 +15,8 @@ end
 
 class Parser < Rly::Yacc
   precedence :left, '+', '-'
-  precedence :left, '*', '/'
+  precedence :left, '*', '/', '%'
+  precedence :left, '^'
 
   rule 'statement : expression' do |statement, expression|
     statement.value = Operation.new(:evaluate, expression.value)
@@ -28,4 +29,29 @@ class Parser < Rly::Yacc
   rule 'expression : expression "+" expression' do |expression, value1, operation, value2|
     expression.value = Operation.new(:+, value1.value, value2.value)
   end
+
+  rule 'expression : expression "-" expression' do |expression, value1, operation, value2|
+    expression.value = Operation.new(:-, value1.value, value2.value)
+  end
+
+  rule 'expression : expression "/" expression' do |expression, value1, operation, value2|
+    expression.value = Operation.new(:/, value1.value, value2.value)
+  end
+
+  rule 'expression : expression "*" expression' do |expression, value1, operation, value2|
+    expression.value = Operation.new(:*, value1.value, value2.value)
+  end
+
+  rule 'expression : expression "%" expression' do |expression, value1, operation, value2|
+    expression.value = Operation.new(:%, value1.value, value2.value)
+  end
+
+  rule 'expression : expression "^" expression' do |expression, value1, operation, value2|
+    expression.value = Operation.new(:**, value1.value, value2.value)
+  end
+
+  rule 'expression : "(" expression ")" ' do |expression1, _, expression2, _|
+    expression1.value = Operation.new(:evaluate, expression2.value)
+  end
+
 end
