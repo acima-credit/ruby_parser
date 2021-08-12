@@ -11,6 +11,16 @@ class Interpreter
     end
   end
 
+  class Function
+    attr_accessor :params, :body
+
+    def initialize(params:, body:)
+      @params = params,
+      @body = body
+    end
+  end
+
+
   def initialize
     @stack = [Scope.new]
   end
@@ -29,6 +39,7 @@ class Interpreter
     when :assign then assign(*tree.arguments)
     when :number then number(*tree.arguments)
     when :lookup then lookup(*tree.arguments)
+    when :function then function(*tree.arguments)
     when :+ then addition(*tree.arguments)
     when :- then subtraction(*tree.arguments)
     when :* then multiply(*tree.arguments)
@@ -38,6 +49,10 @@ class Interpreter
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
+  end
+
+  def function(body)
+    Function.new(params: {}, body: body)
   end
 
   def assign(var_name, expression)
