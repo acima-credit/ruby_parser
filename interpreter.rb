@@ -14,15 +14,19 @@ class Interpreter
 
   def evaluate(tree)
     case tree.operation
+    when :assign then assign(*tree.arguments)
     when :evaluate then evaluate(*tree.arguments)
     when :close then close_toolbox
+    when :negate then negate(*tree.arguments)
     when :add then add(*tree.arguments)
     when :subtract then subtract(*tree.arguments)
     when :multiply then multiply(*tree.arguments)
     when :divide then divide(*tree.arguments)
-    when :raise then raise(*tree.arguments)
+    when :power then power(*tree.arguments)
+    when :modulo then modulo(*tree.arguments)
     when :number then number(*tree.arguments)
     when :lookup then lookup(*tree.arguments)
+    when :negate then negate(*tree.arguments)
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
@@ -40,7 +44,12 @@ class Interpreter
 
   def lookup(name)
     log "#lookup #{name}"
-    name
+    if @names.has_key? name
+      @names[name]
+    else
+      puts "Cannot lookup undefined variable '#{name}'"
+      raise "Lookup error"
+    end
   end
 
   def add(a, b)
@@ -63,8 +72,23 @@ class Interpreter
     evaluate(a) / evaluate(b)
   end
 
-  def raise(a, b)
-    log "#raise #{a}, #{b}"
+  def modulo(a, b)
+    log "#modulo #{a}, #{b}"
+    evaluate(a) % evaluate(b)
+  end
+
+  def power(a, b)
+    log "#power #{a}, #{b}"
     evaluate(a) ** evaluate(b)
+  end
+
+  def negate(a)
+    log "#negate #{a}"
+    evaluate(a) * -1
+  end
+
+  def assign(var_name, var_value)
+    log "#assign variable #{var_name} to value #{var_value}"
+    @names[var_name] = evaluate(var_value)
   end
 end
