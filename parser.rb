@@ -30,6 +30,11 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:number, number.value)
   end
 
+  rule 'expression : NAME' do |expression, name|
+    exit(0) if ["exit", "quit"].include?(name.value)
+    expression.value = Operation.new(:lookup, name.value)
+  end
+
   rule 'expression : expression "+" expression' do |expression, number_a, operator, number_b|
     expression.value = Operation.new(:+, number_a.value, number_b.value)
   end
@@ -51,6 +56,10 @@ class Parser < Rly::Yacc
   end
 
   rule 'expression : expression "^" expression' do |expression, number_a, operator, number_b|
+    expression.value = Operation.new(:^, number_a.value, number_b.value)
+  end
+
+  rule 'function : expression "^" expression' do |expression, number_a, operator, number_b|
     expression.value = Operation.new(:^, number_a.value, number_b.value)
   end
 

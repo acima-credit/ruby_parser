@@ -28,6 +28,7 @@ class Interpreter
     when :evaluate then evaluate(*tree.arguments)
     when :assign then assign(*tree.arguments)
     when :number then number(*tree.arguments)
+    when :lookup then lookup(*tree.arguments)
     when :+ then addition(*tree.arguments)
     when :- then subtraction(*tree.arguments)
     when :* then multiply(*tree.arguments)
@@ -45,6 +46,10 @@ class Interpreter
 
   def number(number)
     number.to_i
+  end
+
+  def lookup(name)
+    current_scope.name[name]
   end
 
   def addition(value_1, value_2)
