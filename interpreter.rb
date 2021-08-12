@@ -27,6 +27,7 @@ class Interpreter
     when :number then number(*tree.arguments)
     when :assignment then assign(*tree.arguments)
     when :function then function(*tree.arguments)
+    when :call then call(*tree.arguments)
     when :lookup then lookup(*tree.arguments)
     when :+ then add(*tree.arguments)
     when :- then subtract(*tree.arguments)
@@ -53,11 +54,15 @@ class Interpreter
   end
 
   def lookup(name)
-    names[name]
+    value = names[name]
   end
 
   def function(expression, params=[])
     { expression: expression, params: params }
+  end
+
+  def call(list, name)
+    
   end
 
   def add(value1, value2)

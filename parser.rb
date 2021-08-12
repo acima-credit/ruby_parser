@@ -75,8 +75,8 @@ class Parser < Rly::Yacc
     parameter.value = name.value
   end
 
-  rule 'parameter_list : parameter | parameter "," parameter_list'\
-  do |parameter_list, param, _comma, list|
+  rule 'parameter_list : parameter | parameter "|" parameter_list'\
+  do |parameter_list, param, _pipe, list|
     parameter_list.value = Array(param.value) + Array(list&.value)
   end
 
@@ -88,4 +88,18 @@ class Parser < Rly::Yacc
   do |expression, _lp, params, _rp, _func, exp|
     expression.value = Operation.new(:function, exp.value, params.value)
   end
+
+  rule 'expression_list : expression | expression "|" expression_list'\
+  do |expression_list, param, _pipe, list|
+    expression_list.value = Array(param.value) + Array(list&.value)
+  end  
+
+  rule 'expression : "(" expression_list ")" CALL NAME'\
+  do |expression, _lp, list, _rp, _call, name|
+    expression.value = Operation.new(:call, list.value, name.value)
+  end
 end
+
+
+# (a | b) => 1 + a + b
+# (1 | 2 | 3) >> multiply
