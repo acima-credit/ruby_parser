@@ -62,9 +62,10 @@ class Interpreter
   def number(number)
     number.to_i
   end
-
+#a = $() ~> 1 + 2
   def lookup(name)
-    current_scope.name[name]
+    value = current_scope.name[name]
+    return evaluate(value.body) if value.is_a?(Function)
   end
 
   def addition(value_1, value_2)

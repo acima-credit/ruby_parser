@@ -30,6 +30,18 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:function, body_function.value)
   end
 
+  rule 'expression : FUNCTION "(" parameter_list ")" FUNCTION_ARROW expression'  do |expression, _function, _left_parentesis, parameter_list, _right_parentesis, _equal, body_function|
+    expression.value = Operation.new(:function, body_function.value)
+  end
+
+  rule 'parameter : NAME' do |parameter, name|
+    parameter.value = name.value
+  end
+
+  rule 'parameter_list : parameter | parameter "," parameter_list ' do |parameter_list, parameter, _pipe, list|
+    parameter_list.value = Array(parameter.value) + Array(list&.value)
+  end
+
   rule 'expression : NUMBER' do |expression, number|
     expression.value = Operation.new(:number, number.value)
   end
@@ -39,7 +51,9 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:lookup, name.value)
   end
 
-  
+  rule 'expression : NAME "(" expression ")"' do |expression, name, _lpar, parameter_expression, _rpar|
+    expression.value = Operation.new(:function, parameter_expression.value)
+  end
 
   rule 'expression : expression "+" expression' do |expression, number_a, operator, number_b|
     expression.value = Operation.new(:+, number_a.value, number_b.value)
@@ -64,13 +78,5 @@ class Parser < Rly::Yacc
   rule 'expression : expression "^" expression' do |expression, number_a, operator, number_b|
     expression.value = Operation.new(:^, number_a.value, number_b.value)
   end
-
-
-  # NOTES:  we discusses about how the parser reads the expressions from right to left and from bottom-top and clarify a lot of the questions
-  # We notice we need to add an operator in the interpreter for the CASE like "when :+ then number(*tree.arguments)" We are missin the then s tatement though"
-  # Things to be done:
-  # -arithmetic functions
-  # -parenthesis
-  # -variable assignment
 
 end
