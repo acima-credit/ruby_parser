@@ -3,10 +3,11 @@
 require 'rly'
 
 class Lexer < Rly::Lex
-  literals "+-*/^%()"
+  literals "+-*/^%()="
   ignore " \t\n\r"
 
   token :NUMBER, /\d+\.?\d*/
+  token :QUIT, /(exit)|(quit)|(\\q)/
   token :NAME, /[a-zA-Z]+/
 
   on_error do |t|
