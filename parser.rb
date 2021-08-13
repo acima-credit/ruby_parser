@@ -30,7 +30,7 @@ class Parser < Rly::Yacc
   precedence :left, '+', '-'
   precedence :left, '*', '/', '%'
   precedence :left, '^'
-  precedence :right, :UMINUS
+  precedence :right, :NEGATIVE
 
   rule 'statement : NAME "=" expression'\
   do |statement, name, _, expression|
@@ -147,12 +147,3 @@ class Parser < Rly::Yacc
     compose.value = Operation.new(:function, 'abc', expression)
   end
 end
-
-# <Operation:0x00007f829914d660
-#  @argument=#<Operation:0x00007f829914ea10 @argument="abc", @arguments=["abc"], @operation=:lookup>,
-#  @arguments=[#<Operation:0x00007f829914ea10 @argument="abc", @arguments=["abc"], @operation=:lookup>, #<Operation:0x00007f829914dc00 @argument=2, @arguments=[2], @operation=:number>],
-#  @operation=:+>
-# <Operation:0x00007fd5f10d3120
-# @argument=#<Operation:0x00007fd5f10d3238 @argument=["abc"], @arguments=[["abc"]], @operation=:lookup>,
-# @arguments=[#<Operation:0x00007fd5f10d3238 @argument=["abc"], @arguments=[["abc"]], @operation=:lookup>, #<Operation:0x00007fd5f10d31c0 @argument=2, @arguments=[2], @operation=:number>],
-# @operation=:+>
