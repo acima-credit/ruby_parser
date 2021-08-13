@@ -1,9 +1,20 @@
 class Interpreter
 
-  # $global_scope = {}
+  class Scope
+    attr_reader :values, :functions
+
+    def initialize
+      @values = {}
+      @functions = {}
+    end
+  end
 
   def initialize
-    @names = {}
+    @stack = [Scope.new]
+  end
+
+  def current_scope
+    @stack.last
   end
 
   def self.log(msg)
@@ -29,7 +40,8 @@ class Interpreter
     when :modulo then modulo(*tree.arguments)
     when :number then number(*tree.arguments)
     when :lookup then lookup(*tree.arguments)
-    when :func then func(*tree.arguments)
+    when :declare then declare(*tree.arguments)
+    when :ring then ring(*tree.arguments)
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
@@ -45,12 +57,12 @@ class Interpreter
     number.to_f
   end
 
-  def lookup(name)
-    log "#lookup #{name}"
-    if @names.has_key? name
-      @names[name]
+  def lookup(value)
+    log "#lookup #{value}"
+    if current_scope.values.has_key? value
+      current_scope.values[value]
     else
-      puts "Cannot lookup undefined variable '#{name}'"
+      puts "Cannot lookup undefined variable '#{value}'"
       raise "Lookup error"
     end
   end
@@ -92,11 +104,21 @@ class Interpreter
 
   def assign(var_name, var_value)
     log "#assign variable #{var_name} to value #{var_value}"
-    @names[var_name] = evaluate(var_value)
+    current_scope.values[var_name] = evaluate(var_value)
   end
 
-  def func(name, definition)
-    log "#func function #{name} to definition #{definition}"
-    @names[name] = definition # not evaluating, params need to be assigned after func defniition. also, still no scope
+  def declare(name, body)
+    log "#declare function #{name} to definition #{body}"
+    current_scope.functions[name] = body # not evaluating, params need to be assigned after func defniition.
+  end
+
+  def ring(name)
+    log "#ring function #{name}"
+    if current_scope.functions.has_key? name
+      evaluate(current_scope.functions[name])
+    else
+      puts "Cannot lookup undefined function '#{name}'"
+      raise "Lookup error"
+    end
   end
 end

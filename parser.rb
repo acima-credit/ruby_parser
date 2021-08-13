@@ -46,11 +46,38 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:assign, name.value, expression_1.value)
   end
 
-  # Function x ~ b+4  ignoring _tool parameters
-  rule 'expression : NAME SCREW expression' do |expression, name, _tool1, expression_1|
-    log "expression : NAME SCREW expression --> (:func, #{name.value}, #{expression_1.value})"
-    expression.value = Operation.new(:func, name.value, expression_1.value)
+  # Function definition x ~ b+4  ignoring _tool parameters
+  rule 'expression : NAME SCREW expression
+                   | NAME WITH names SCREW expression' do |expression, name, _tool1, expression_1|
+    log "expression : NAME SCREW expression --> (:declare, #{name.value}, #{expression_1.value})"
+    expression.value = Operation.new(:declare, name.value, expression_1.value)
+end
+
+# FINISH DEFINING FUNCTION DEFINITION SYNTAX ^^^  vvv
+# multiply with x and y ~ x * y
+# double with x ~ ring multiply with x and 2
+
+# ring double with 7
+
+  # double ~ x * 2 with x
+  # names of variables for a function: double with x ~ x * 2 
+  #                                  | multiply with x and y ~ x * y
+  rule 'names : NAME AND names' do |names, name _tool, names_2|
+    log "names : NAME AND names --> ()"
   end
+
+  # Function call example: ring multiply with 3 and 5 (function lookup) ignoring _tool parameters
+  rule 'expression : RING NAME
+                   | RING NAME WITH values' do |expression, _tool, name|
+    log "expression : RING NAME --> (:ring, #{name.value})"
+    expression.value = Operation.new(:ring, name.value)
+  end
+
+  # arguments can be like: 3
+  #                    or: 3 and 4
+  #                    or: 3 and 4 and 19
+  rule 'values : expression
+               | expression AND values'
 
   # Parenthesis - ignoring _tool parameters
   rule 'expression : LEFT_HOOK expression RIGHT_HOOK' do |expression, _tool1, expression_1, _tool2|
