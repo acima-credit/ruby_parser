@@ -35,7 +35,10 @@ class Interpreter
     return unless block_given?
 
     push_stack
-    yield.tap { pop_stack }
+    to_return = yield
+    pop_stack
+
+    to_return
   end
 
   def evaluate(tree)
@@ -80,8 +83,13 @@ class Interpreter
 
   def call(list, name)
     function = current_scope.names[name]
-    within_new_scope do
 
+    within_new_scope do
+      function[:params].each_with_index do |param, index|
+        assign(param, list[index])
+      end
+
+      evaluate(function[:expression])
     end
   end
 
