@@ -15,10 +15,12 @@ class Interpreter
     end
   end
 
-  attr_accessor :names
-
   def initialize
-    @names = {}
+    @stack = [Scope.new]
+  end
+
+  def current_scope
+    @stack.first
   end
 
   def evaluate(tree)
@@ -41,8 +43,8 @@ class Interpreter
     end
   rescue Error => e
     puts "Error: #{e.class} - #{e.message}"
-  rescue => e
-    puts "Oops: #{e.class} - #{e.message}"    
+  rescue StandardError => e
+    puts "Oops: #{e.class} - #{e.message}"
   end
 
   def number(number)
@@ -50,19 +52,21 @@ class Interpreter
   end
 
   def assign(name, value)
-    names[name] = evaluate(value)
+    current_scope.names[name] = evaluate(value)
   end
 
   def lookup(name)
-    value = names[name]
+    current_scope.names[name]
   end
 
-  def function(expression, params=[])
+  def function(expression, params = [])
     { expression: expression, params: params }
   end
 
   def call(list, name)
-    
+    binding.pry
+    function = current_scope.names[name]
+
   end
 
   def add(value1, value2)
