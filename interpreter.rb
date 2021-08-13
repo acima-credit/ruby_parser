@@ -16,11 +16,19 @@ class Interpreter
   end
 
   def initialize
-    @stack = [Scope.new]
+    @call_stack = [Scope.new]
   end
 
   def current_scope
-    @stack.first
+    @call_stack.last
+  end
+
+  def push_stack
+    @call_stack.push(current_scope.dup)
+  end
+
+  def pop_stack
+    @call_stack.pop
   end
 
   def evaluate(tree)
