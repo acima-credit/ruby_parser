@@ -31,6 +31,13 @@ class Interpreter
     @call_stack.pop
   end
 
+  def within_new_scope
+    return unless block_given?
+
+    push_stack
+    yield.tap { pop_stack }
+  end
+
   def evaluate(tree)
     case tree.operation
     when :evaluate then evaluate(*tree.arguments)
@@ -72,9 +79,10 @@ class Interpreter
   end
 
   def call(list, name)
-    binding.pry
     function = current_scope.names[name]
+    within_new_scope do
 
+    end
   end
 
   def add(value1, value2)
