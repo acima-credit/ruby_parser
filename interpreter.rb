@@ -1,4 +1,7 @@
 class Interpreter
+
+  # $global_scope = {}
+
   def initialize
     @names = {}
   end
@@ -26,7 +29,7 @@ class Interpreter
     when :modulo then modulo(*tree.arguments)
     when :number then number(*tree.arguments)
     when :lookup then lookup(*tree.arguments)
-    when :negate then negate(*tree.arguments)
+    when :func then func(*tree.arguments)
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
@@ -90,5 +93,10 @@ class Interpreter
   def assign(var_name, var_value)
     log "#assign variable #{var_name} to value #{var_value}"
     @names[var_name] = evaluate(var_value)
+  end
+
+  def func(name, definition)
+    log "#func function #{name} to definition #{definition}"
+    @names[name] = definition # not evaluating, params need to be assigned after func defniition. also, still no scope
   end
 end

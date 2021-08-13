@@ -34,6 +34,7 @@ class Lexer < Rly::Lex
   logged_token :LEFT_HOOK, /\(/
   logged_token :RIGHT_HOOK, /\)/
   logged_token :PULLEY, /\%/
+  logged_token :SCREW, /\~/
 
   on_error do |t|
     puts "Illegal character #{t.value}"

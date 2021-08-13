@@ -46,6 +46,12 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:assign, name.value, expression_1.value)
   end
 
+  # Function x ~ b+4  ignoring _tool parameters
+  rule 'expression : NAME SCREW expression' do |expression, name, _tool1, expression_1|
+    log "expression : NAME SCREW expression --> (:func, #{name.value}, #{expression_1.value})"
+    expression.value = Operation.new(:func, name.value, expression_1.value)
+  end
+
   # Parenthesis - ignoring _tool parameters
   rule 'expression : LEFT_HOOK expression RIGHT_HOOK' do |expression, _tool1, expression_1, _tool2|
     log "expression : LEFT_HOOK expression RIGHT_HOOK --> (:evaluate, #{expression_1.value})"
