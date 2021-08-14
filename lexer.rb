@@ -7,6 +7,7 @@ class Lexer < Rly::Lex
 
   token :NUMBER, /\d+\.?\d*/
   token :NAME, /[a-zA-Z_]/
+  token :LOOK, /look/
 
   on_error do |t|
     puts "Illegal character #{t.value}"
