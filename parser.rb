@@ -9,8 +9,13 @@ class Action
 end
 
 class Parser < Rly::Yacc
-  rule 'statement : LOOK'\
-  do |statement, _look|
-    statement.value = Action.new(:look_around)
+  rule 'expression : LOOK'\
+  do |expression, _look|
+    expression.value = Action.new(:look_around)
+  end
+
+  rule 'expression : LOOK NAME'\
+  do |expression, _look, name|
+    expression.value = Action.new(:look, name.value)
   end
 end
