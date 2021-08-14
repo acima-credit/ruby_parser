@@ -10,8 +10,23 @@ require './interpreter'
 parser = Parser.new(Lexer.new)
 interpreter = Interpreter.new
 
+
+puts 'Literals'
+puts '--------'
+puts Lexer.literals_list.chars.join(' ')
+puts
+
+puts 'Tokens'
+puts '------'
+Lexer.tokens.each { |name, regex| puts "#{name}: #{regex}" }
+puts
+
+puts 'Rules'
+puts '-----'
+Parser.rules.each { |rule, _| puts rule }
+puts
+
 while (buffer = Readline.readline('> ', true))
   parse_tree = parser.parse(buffer)
-  binding.pry
   puts interpreter.evaluate(parse_tree)
 end
