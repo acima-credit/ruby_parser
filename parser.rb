@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class Action
   attr_accessor :action, :targets
 
@@ -13,7 +14,7 @@ class Parser < Rly::Yacc
     statement.value = Action.new(:look, name&.value)
   end
 
-  # rule 'statement : LOOK' do |statement, _look|
-  #   statement.value = Action.new(:look_around)
-  # end
+  rule 'expression : NAME' do |expression, name|
+    expression.value = Action.new(:lookup, name.value)
+  end
 end
