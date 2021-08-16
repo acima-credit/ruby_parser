@@ -16,7 +16,7 @@ class Room
   def exists_description
     "You don't see any obvious exits" if exits.empty?
 
-    "You see exits in #{exits.keys.map { |k| k.to_s.colorize(:yellow) }.join(', ')} directions"
+    "Exits are: #{exits.keys.map { |k| k.to_s.colorize(:yellow) }.join(', ')}"
   end
 
   def set_exit(direction, room)
