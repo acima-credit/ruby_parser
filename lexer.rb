@@ -25,7 +25,6 @@ class Lexer < Rly::Lex
   # language keywords
   logged_token :RING, /ring/  # -> multiply x and y ~ x * y ;;; ring multiply with 3 and 5
   logged_token :WITH, /with/
-  logged_token :AND, /and/    # -> delimiter for function parameters 
 
   logged_token :NUMBER, /\d+\.?\d*/
   logged_token :CLOSE_TOOLBOX, /exit/
@@ -40,6 +39,7 @@ class Lexer < Rly::Lex
   logged_token :RIGHT_HOOK, /\)/
   logged_token :PULLEY, /\%/
   logged_token :SCREW, /\~/
+  logged_token :RIVET, /\,/    # -> delimiter for function parameters 
 
   on_error do |t|
     puts "Illegal character #{t.value}"
