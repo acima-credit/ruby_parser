@@ -40,6 +40,7 @@ class Interpreter
     when :number then number(*tree.arguments)
     when :lookup then lookup(*tree.arguments)
     when :function then function(*tree.arguments)
+    when :evaluate_function then evaluate_function(*tree.arguments)
     when :+ then addition(*tree.arguments)
     when :- then subtraction(*tree.arguments)
     when :* then multiply(*tree.arguments)
@@ -51,8 +52,15 @@ class Interpreter
     end
   end
 
-  def function(body)
-    Function.new(params: {}, body: body)
+  # TODO: pass the parameters values to the function evaluation
+  def evaluate_function(function_name, parameters)
+    binding.pry
+    # current_scope.name[function_name.value]
+    # evaluate()
+  end
+
+  def function(params, body)
+    Function.new(params: params, body: body)
   end
 
   def assign(var_name, expression)
@@ -62,7 +70,9 @@ class Interpreter
   def number(number)
     number.to_i
   end
-#a = $() ~> 1 + 2
+  
+  #a = $(x) ~> x + 1
+  #b = $(x,y) ~> x + y
   def lookup(name)
     value = current_scope.name[name]
     return evaluate(value.body) if value.is_a?(Function)

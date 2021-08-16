@@ -27,18 +27,18 @@ class Parser < Rly::Yacc
   end
 
   rule 'expression : FUNCTION "(" ")" FUNCTION_ARROW expression'  do |expression, _function, _left_parentesis, _right_parentesis, _equal, body_function|
-    expression.value = Operation.new(:function, body_function.value)
+    expression.value = Operation.new(:function, nil, body_function.value)
   end
 
   rule 'expression : FUNCTION "(" parameter_list ")" FUNCTION_ARROW expression'  do |expression, _function, _left_parentesis, parameter_list, _right_parentesis, _equal, body_function|
-    expression.value = Operation.new(:function, body_function.value)
+    expression.value = Operation.new(:function, parameter_list.value, body_function.value)
   end
 
   rule 'parameter : NAME' do |parameter, name|
     parameter.value = name.value
   end
 
-  rule 'parameter_list : parameter | parameter "," parameter_list ' do |parameter_list, parameter, _pipe, list|
+  rule 'parameter_list : parameter | parameter "," parameter_list ' do |parameter_list, parameter, _comma, list|
     parameter_list.value = Array(parameter.value) + Array(list&.value)
   end
 
@@ -51,8 +51,12 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:lookup, name.value)
   end
 
-  rule 'expression : NAME "(" expression ")"' do |expression, name, _lpar, parameter_expression, _rpar|
-    expression.value = Operation.new(:function, parameter_expression.value)
+  rule 'expression_list : expression | expression "," expression_list' do |expression_list, expression, _comma, list|
+    expression_list.value = Array(expression.value) + Array(list&.value)
+  end
+
+  rule 'expression : NAME "(" expression_list ")"' do |expression, name, _lpar, parameter_expression, _rpar|
+    expression.value = Operation.new(:evaluate_function, name, parameter_expression.value)
   end
 
   rule 'expression : expression "+" expression' do |expression, number_a, operator, number_b|
