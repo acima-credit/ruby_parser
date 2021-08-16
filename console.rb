@@ -2,6 +2,7 @@
 
 require 'rly'
 require 'pry'
+require 'colorize'
 require 'readline'
 require './lexer'
 require './parser'

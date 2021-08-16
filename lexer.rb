@@ -5,9 +5,16 @@ class Lexer < Rly::Lex
   literals ""
   ignore " \t\n\r"
 
-  token :NUMBER, /\d+\.?\d*/
+  token :HISTORY, /history/
   token :LOOK, /look/
-  token :NAME, /[a-zA-Z_]/
+  token :INVOKE, /invoke/
+  token :CRAFT, /craft/
+  token :EQUIP, /equip/
+  token :INVENTORY, /inventory/
+  token :GO, /go/
+  token :SAVE, /save/
+  token :NUMBER, /\d+\.?\d*/
+  token :NAME, /[a-zA-Z_]+/
 
   on_error do |t|
     puts "Illegal character #{t.value}"

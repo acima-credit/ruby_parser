@@ -7,14 +7,42 @@ class Action
     @action = action
     @targets = targets
   end
+
+  def to_s
+    if targets.empty?
+      "<#{action}>"
+    else
+      "(#{action}: #{targets.join(', ')})"
+    end
+  end
 end
 
 class Parser < Rly::Yacc
-  rule 'statement : LOOK | LOOK NAME' do |statement, _look, name|
-    statement.value = Action.new(:look, name&.value)
+  rule 'statement : HISTORY' do |statement, _history|
+    statement.value = Action.new(:history)
   end
 
-  rule 'expression : NAME' do |expression, name|
-    expression.value = Action.new(:lookup, name.value)
+  rule 'statement : SAVE' do |statement, _save|
+    statement.value = Action.new(:save)
+  end
+
+  rule 'statement : LOOK' do |statement, _look|
+    statement.value = Action.new(:look_around)
+  end
+
+  rule 'statement : LOOK NAME' do |statement, _look, name|
+    statement.value = Action.new(:look, name.value)
+  end
+
+  rule 'statement : GO NAME' do |statement, _go, name|
+    statement.value = Action.new(:go, name.value.to_sym)
+  end
+
+  rule 'statement : INVENTORY' do |statement, _inv|
+    statement.value = Action.new(:inventory)
+  end
+
+  rule 'statement : INVOKE NUMBER' do |statement, _invoke, number|
+    statement.value = Action.new(:invoke, number.value)
   end
 end
