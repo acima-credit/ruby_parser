@@ -1,0 +1,3 @@
+#!/bin/bash
+echo ruby console.rb $@
+ruby console.rb $@
