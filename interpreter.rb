@@ -28,7 +28,6 @@ class Room
   end
 end
 
-
 class Interpreter
   def initialize
     @inventory = {}
@@ -40,9 +39,14 @@ class Interpreter
     )
     cave = Room.new(
       description: "You are standing in a cave. You can barely make out the walls from the dim light of the opening",
-      exits: { north: entrance }
+    )
+    pit = Room.new(
+      description: "You have fallen into a pit."
     )
     entrance.set_exit(:south, cave)
+    cave.set_exit(:north, entrance)
+    cave.set_exit(:east, pit)
+    pit.set_exit(:up, cave)
 
     @current_room = entrance
   end
@@ -85,15 +89,11 @@ class Interpreter
   end
 
   def lookup(name)
-    exit(0) if @current_room.exits[name] == 'exit'
 
-    if @current_room.exits[name]
-      @current_room = @current_room.exits[name]
-    end
   end
 
   def invoke(number)
-    @current_room.items[number] = "a number #{number}"
+    @current_room.items[number] = "a #{number}"
   end
 
   def go(name)
