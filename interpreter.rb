@@ -1,4 +1,5 @@
 require_relative 'room'
+require_relative 'item'
 
 class Interpreter
   def initialize
@@ -18,7 +19,6 @@ class Interpreter
     when :history then history
     when :look then look(*tree.targets)
     when :look_around then look_around
-    when :lookup then lookup(*tree.targets)
     when :invoke then invoke(*tree.targets)
     when :go then go(*tree.targets)
     when :save then save
@@ -44,15 +44,15 @@ class Interpreter
   end
 
   def look(name)
-    "you look at #{name}"
-  end
-
-  def lookup(name)
-
+    @current_room.items[name].description
   end
 
   def invoke(number)
-    @current_room.items[number] = "a #{number}"
+    @current_room.items[number] = Item.new(
+      summary: number,
+      description: "It is an unremarkable #{number}",
+      type: :number
+    )
   end
 
   def go(name)

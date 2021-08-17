@@ -43,7 +43,7 @@ class Room
   def items_description
     return "There are no items here." if items.empty?
 
-    "You see: #{items.values.map { |i| i.to_s.colorize(:light_blue) }.join(', ')}."
+    "You see: #{items.keys.map { |i| i.to_s.colorize(:light_blue) }.join(', ')}."
   end
 
   def exists_description
