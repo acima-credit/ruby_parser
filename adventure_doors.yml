@@ -1,7 +1,7 @@
 ---
 ranger_shack_door:
   name: ranger shack door
-  closed: true
+  state: closed
   description_always: The ranger shack has a simple door, which is
   description_closed: closed.
   description_open: open.

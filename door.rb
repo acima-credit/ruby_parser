@@ -21,18 +21,22 @@ class Door
               :description_closed,
               :description_locked,
               :description_open,
-              :destination
+              :destination,
+              :state
 
+  LOCKED = "locked"
+  CLOSED = "closed"
+  OPEN   = "open"
+  STATES = [OPEN, CLOSED, LOCKED]
 
-  attr_accessor :closed, :locked
-
-  def initialize(name:, destination:, closed:, locked:,
+  def initialize(name:, destination:, state:,
                  description_always:, description_closed:,
                  description_locked:, description_open:)
+    raise ArgumentError.new("state must be one of #{STATES.join(',')}") unless STATES.include?(state)
+
     @name = name
     @destination = destination
-    @closed = closed
-    @locked = locked
+    @state = state
     @description_always = description_always
     @description_closed = description_closed
     @description_locked = description_locked
@@ -54,12 +58,8 @@ class Door
     @destination = room
   end
 
-
-  # Blech. It's a 2x2 state machine. I kinda hate the booleans here, if I'm
-  # writing a new door I'm as like as not to try to say open: true instead of
-  # closed: false. Bleh. It's sleepy and I'm late, would enums be any better?
   def locked?
-    !!locked == true
+    state == LOCKED
   end
 
   def unlocked?
@@ -67,20 +67,22 @@ class Door
   end
 
   def closed?
-    !!closed == true
+    locked? || state == CLOSED
   end
 
   def open?
     !closed?
   end
 
-  # See above comment about booleans vs. enums. I wrote this because I couldn't
-  # remember if I should set door.open to true or door.closed to false.
   def open!
-    self.closed = false
+    @state = OPEN
   end
 
   def close!
-    self.closed = true
+    @state = CLOSED
+  end
+
+  def lock!
+    @state = LOCKED
   end
 end

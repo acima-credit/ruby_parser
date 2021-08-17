@@ -31,8 +31,7 @@ class Room
     doors_data.each do |name, door_data|
       map.doors[name] = Door.new(
         name: door_data["name"],
-        closed: door_data["closed"],
-        locked: door_data["locked"],
+        state: door_data["state"],
         description_always: door_data["description_always"],
         description_closed: door_data["description_closed"],
         description_open: door_data["description_open"],

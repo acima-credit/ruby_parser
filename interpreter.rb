@@ -146,16 +146,4 @@ class Interpreter
   def save
     # output @history to file
   end
-
-  private
-
-  def english_join(list, conjuction='and', glue=',')
-    case list.size
-    when 0 then ""
-    when 1 then list.first
-    else
-      (list[0..-2] + ["#{conjunction} #{list[-1]}"]).join(glue)
-    end
-
-  end
 end
