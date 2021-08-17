@@ -73,6 +73,7 @@ class Parser < Rly::Yacc
     statement.value = Action.new(:invoke, number.value)
   end
 
+  # objects have one or two names: "door" or "weird door"
   rule 'object : NAME
                | NAME NAME' do |object, adjective, noun|
     object.value = Array(adjective.value) + Array(noun&.value)
