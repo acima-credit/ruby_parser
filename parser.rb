@@ -35,7 +35,7 @@ class Parser < Rly::Yacc
   end
 
   rule 'statement : GO NAME' do |statement, _go, name|
-    statement.value = Action.new(:go, name.value.to_sym)
+    statement.value = Action.new(:go, name.value)
   end
 
   rule 'statement : INVENTORY' do |statement, _inv|

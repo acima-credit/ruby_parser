@@ -8,7 +8,7 @@ class Interpreter
 
     rooms = Room.load_rooms
 
-    @current_room = rooms[:entrance]
+    @current_room = rooms["entrance"]
   end
 
   def evaluate(tree)

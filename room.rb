@@ -14,16 +14,16 @@ class Room
     rooms_data = YAML::load_file("./adventure_rooms.yml")
     # hydrate the objects
     rooms_data.each do |name, room_data|
-      rooms[name] = Room.new(room_data)
+      rooms[name] = Room.new(description: room_data["description"])
     end
 
     # haxxor in an exit room
-    rooms[:exit] = "exit"
+    rooms["exit"] = "exit"
 
     # now stitch up the exit names to real room objects
     # could also do this in the go command, but this works too.
     rooms_data.each do |name, room_data|
-      room_data[:exits].each do |direction, destination|
+      room_data["exits"].each do |direction, destination|
         if rooms[destination]
           rooms[name].set_exit(direction, rooms[destination])
         else
