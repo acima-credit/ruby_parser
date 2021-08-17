@@ -1,0 +1,15 @@
+---
+# I don't love how many extra colons there are in here, but the alternative
+# is to either convert all the code to use strings to to have the code just
+# RIDDLED with calls to .to_sym--enough to make the code harder to read :(
+:entrance:
+  :description: You are at the entrance to a colossal cave
+  :items: {}
+  :exits:
+    :exit: :exit
+    :south: :cave
+:cave:
+  :description: You are standing in a cave. You can barely make out the walls from the dim light of the opening
+  :items: {}
+  :exits:
+    :north: :entrance

@@ -1,21 +1,14 @@
 require_relative 'room'
+require 'yaml'
 
 class Interpreter
   def initialize
     @inventory = {}
     @history = []
 
-    entrance = Room.new(
-      description: "You are at the entrance to a colossal cave",
-      exits: { exit: 'exit' }
-    )
-    cave = Room.new(
-      description: "You are standing in a cave. You can barely make out the walls from the dim light of the opening",
-      exits: { north: entrance }
-    )
-    entrance.set_exit(:south, cave)
+    rooms = Room.load_rooms
 
-    @current_room = entrance
+    @current_room = rooms[:entrance]
   end
 
   def evaluate(tree)
@@ -70,6 +63,13 @@ class Interpreter
   end
 
   def go(name)
+    # NOCOMMIT: logging
+    puts '-' * 10
+    puts "go(#{name.inspect})"
+    puts "@current_room.exits: #{@current_room.exits.keys.inspect}"
+    puts "@current_room.exits[name]: #{@current_room.exits[name].inspect}"
+    puts "@current_room: #{@current_room.inspect}"
+    puts '-' * 10
     exit(0) if @current_room.exits[name] == 'exit'
 
     if @current_room.exits[name]

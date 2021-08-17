@@ -1,3 +1,5 @@
+require 'yaml' # yaml/store, perhaps?
+
 class Room
   attr_accessor :description, :items, :exits
 
@@ -5,6 +7,33 @@ class Room
     @description = description || "You are in a maze of twisty little passages, all alike."
     @items = items
     @exits = exits
+  end
+
+  def self.load_rooms
+    rooms = {}
+    rooms_data = YAML::load_file("./adventure_rooms.yml")
+    # hydrate the objects
+    rooms_data.each do |name, room_data|
+      rooms[name] = Room.new(room_data)
+    end
+
+    # haxxor in an exit room
+    rooms[:exit] = "exit"
+
+    # now stitch up the exit names to real room objects
+    # could also do this in the go command, but this works too.
+    rooms_data.each do |name, room_data|
+      room_data[:exits].each do |direction, destination|
+        if rooms[destination]
+          rooms[name].set_exit(direction, rooms[destination])
+        else
+          # Warn us on load if we have a tyop in adventure_rooms.yml
+          puts "ERROR:".bold.white.on_red + " Could not set_exit(#{direction.inspect}, #{destination.inspect}) from room #{name.inspect}: destination does not exist."
+        end
+      end
+    end
+    puts "#{rooms.size-1} ROOMS LOADED!".bold.white.on_green
+    rooms
   end
 
   def items_description
