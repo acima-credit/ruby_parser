@@ -1,11 +1,20 @@
 ---
 entrance:
-  description: You are at the entrance to a colossal cave. The cave entrance yawns menacingly to the south, while to the east lies a small ranger shack.
+  here: at the cave entrance
+  description: You are at the entrance to a colossal cave. The cave entrance yawns menacingly to the south, while to the east lies a small ranger shack. It has a simple wooden door, which is currently open.
   items: {}
   exits:
     exit: exit
     south: cave
+    east: ranger_shack
+ranger_shack:
+  here: inside the ranger shack
+  description: You are inside the ranger shack. A wide window lets you keep an eye on the hooligans coming and going through the cave entrance. This would be an excellent place for an actual ranger to be stationed.
+  items: {}
+  exits:
+    out: cave
 cave:
+  here: in the cave
   description: You are standing in a cave. You can barely make out the walls from the dim light of the opening.
   items: {}
   exits:

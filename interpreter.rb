@@ -67,7 +67,7 @@ class Interpreter
 
     if @current_room.exits[name]
       @current_room = @current_room.exits[name]
-      "You go #{name}."
+      "You go #{name}. You are #{@current_room.here}."
     else
       "You can't go that way."
     end

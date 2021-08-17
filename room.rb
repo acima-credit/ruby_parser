@@ -1,9 +1,10 @@
 require 'yaml' # yaml/store, perhaps?
 
 class Room
-  attr_accessor :description, :items, :exits
+  attr_accessor :here, :description, :items, :exits
 
-  def initialize(description:, items: {}, exits: {})
+  def initialize(here:, description:, items: {}, exits: {})
+    @here = here
     @description = description || "You are in a maze of twisty little passages, all alike."
     @items = items
     @exits = exits
@@ -14,7 +15,10 @@ class Room
     rooms_data = YAML::load_file("./adventure_rooms.yml")
     # hydrate the objects
     rooms_data.each do |name, room_data|
-      rooms[name] = Room.new(description: room_data["description"])
+      rooms[name] = Room.new(
+        here: room_data["here"],
+        description: room_data["description"]
+      )
     end
 
     # haxxor in an exit room
