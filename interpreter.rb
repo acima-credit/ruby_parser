@@ -63,13 +63,6 @@ class Interpreter
   end
 
   def go(name)
-    # NOCOMMIT: logging
-    puts '-' * 10
-    puts "go(#{name.inspect})"
-    puts "@current_room.exits: #{@current_room.exits.keys.inspect}"
-    puts "@current_room.exits[name]: #{@current_room.exits[name].inspect}"
-    puts "@current_room: #{@current_room.inspect}"
-    puts '-' * 10
     exit(0) if @current_room.exits[name] == 'exit'
 
     if @current_room.exits[name]
