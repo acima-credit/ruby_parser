@@ -1,54 +1,13 @@
-class Room
-  attr_accessor :description, :items, :exits
-
-  def initialize(description:, items: {}, exits: {})
-    @description = description || "You are in a maze of twisty little passages, all alike."
-    @items = items
-    @exits = exits
-  end
-
-  def items_description
-    return "There are no items here" if items.empty?
-
-    "You see: #{items.values.map { |i| i.to_s.colorize(:light_blue) }.join(', ')}"
-  end
-
-  def exists_description
-    "You don't see any obvious exits" if exits.empty?
-
-    "Exits are: #{exits.keys.map { |k| k.to_s.colorize(:yellow) }.join(', ')}"
-  end
-
-  def set_exit(direction, room)
-    exits[direction] = room
-  end
-
-  def to_s
-    description
-  end
-end
+require_relative 'room'
 
 class Interpreter
   def initialize
     @inventory = {}
     @history = []
 
-    entrance = Room.new(
-      description: "You are at the entrance to a colossal cave",
-      exits: { exit: 'exit' }
-    )
-    cave = Room.new(
-      description: "You are standing in a cave. You can barely make out the walls from the dim light of the opening",
-    )
-    pit = Room.new(
-      description: "You have fallen into a pit."
-    )
-    entrance.set_exit(:south, cave)
-    cave.set_exit(:north, entrance)
-    cave.set_exit(:east, pit)
-    pit.set_exit(:up, cave)
+    rooms = Room.load_rooms
 
-    @current_room = entrance
+    @current_room = rooms["entrance"]
   end
 
   def evaluate(tree)
@@ -101,7 +60,7 @@ class Interpreter
 
     if @current_room.exits[name]
       @current_room = @current_room.exits[name]
-      "You go #{name}"
+      "You go #{name}. You are #{@current_room.here}."
     else
       "You can't go that way."
     end
