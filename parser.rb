@@ -34,6 +34,14 @@ class Parser < Rly::Yacc
     statement.value = Action.new(:look, name.value)
   end
 
+  rule 'statement : OPEN NAME' do |statement, _open, name|
+    statement.value = Action.new(:open, name.value)
+  end
+
+  rule 'statement : CLOSE NAME' do |statement, _close, name|
+    statement.value = Action.new(:close, name.value)
+  end
+
   rule 'statement : GO NAME' do |statement, _go, name|
     statement.value = Action.new(:go, name.value)
   end

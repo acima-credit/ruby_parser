@@ -7,6 +7,8 @@ class Lexer < Rly::Lex
 
   token :HISTORY, /history/
   token :LOOK, /look/
+  token :OPEN, /open/
+  token :CLOSE, /close/
   token :INVOKE, /invoke/
   token :CRAFT, /craft/
   token :EQUIP, /equip/

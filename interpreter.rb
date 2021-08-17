@@ -6,9 +6,9 @@ class Interpreter
     @inventory = {}
     @history = []
 
-    rooms = Room.load_rooms
+    map = Room.load_map
 
-    @current_room = rooms["entrance"]
+    @current_room = map.rooms["entrance"]
   end
 
   def evaluate(tree)
@@ -18,6 +18,8 @@ class Interpreter
     when :inventory then inventory
     when :history then history
     when :look then look(*tree.targets)
+    when :open then open(*tree.targets)
+    when :close then close(*tree.targets)
     when :look_around then look_around
     when :lookup then lookup(*tree.targets)
     when :invoke then invoke(*tree.targets)
@@ -63,17 +65,74 @@ class Interpreter
   end
 
   def go(name)
-    exit(0) if @current_room.exits[name] == 'exit'
+    target = @current_room.exits[name]
+    exit(0) if target == 'exit'
 
-    if @current_room.exits[name]
-      @current_room = @current_room.exits[name]
-      "You go #{name}. You are #{@current_room.here}."
+    if target
+      if target.is_a? Door
+        if target.closed?
+          "Sorry, the #{target.name} is closed."
+        else
+          # target is an open door; jump to its destination
+          target = target.destination
+
+          # Duplication is better than a bad abstraction, I need a nonbad abstraction here
+          @current_room = target
+          "You go #{name}. You are #{@current_room.here}."
+        end
+      else
+        # Duplication is better than a bad abstraction, I need a nonbad abstraction here
+        @current_room = target
+        "You go #{name}. You are #{@current_room.here}."
+      end
     else
       "You can't go that way."
     end
   end
 
+  def open(name)
+    # TODO: open things besides doors, e.g. envelope, chest, trapdoor
+    # TODO: disambiguate objects, e.g. open iron door, open blue box
+    if name == "door"
+      doors = @current_room.doors
+
+      case doors.size
+      when 0
+        "I see no door in this room."
+      when 1
+        door = doors.values.first
+
+        if door.locked?
+          "The #{door.name} is locked."
+        else
+          door.open!
+          "You open the #{door.name}."
+        end
+      else
+        # TODO: handle door disambiguation here
+        "ERROR:".bold.white.on_red +
+          " Object disambiguation needed -- multiple doors in room: " +
+          doors.values.map(&:name).inspect
+      end
+    end
+  end
+
+  def close(name)
+  end
+
   def save
     # output @history to file
+  end
+
+  private
+
+  def english_join(list, conjuction='and', glue=',')
+    case list.size
+    when 0 then ""
+    when 1 then list.first
+    else
+      (list[0..-2] + ["#{conjunction} #{list[-1]}"]).join(glue)
+    end
+
   end
 end

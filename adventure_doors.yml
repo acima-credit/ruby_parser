@@ -1,0 +1,9 @@
+---
+ranger_shack_door:
+  name: ranger shack door
+  closed: true
+  description_always: The ranger shack has a simple door, which is
+  description_closed: closed.
+  description_open: open.
+  description_locked: locked, which is weird because this is not actually even possible.
+  destination: ranger_shack
