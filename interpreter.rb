@@ -118,6 +118,29 @@ class Interpreter
   end
 
   def close(name)
+    # TODO: THIS IS A STRAIGHT RIP OF def open! Refactor THAT, then fix THIS.
+    if name == "door"
+      doors = @current_room.doors
+
+      case doors.size
+      when 0
+        "I see no door in this room."
+      when 1
+        door = doors.values.first
+
+        if door.locked? # yes a door can be locked open
+          "The #{door.name} is locked."
+        else
+          door.close!
+          "You close the #{door.name}."
+        end
+      else
+        # TODO: handle door disambiguation here
+        "ERROR:".bold.white.on_red +
+          " Object disambiguation needed -- multiple doors in room: " +
+          doors.values.map(&:name).inspect
+      end
+    end
   end
 
   def save
