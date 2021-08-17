@@ -1,5 +1,5 @@
 require_relative 'room'
-require 'yaml'
+require_relative 'item'
 
 class Interpreter
   def initialize
@@ -21,7 +21,8 @@ class Interpreter
     when :open then open(*tree.targets)
     when :close then close(*tree.targets)
     when :look_around then look_around
-    when :lookup then lookup(*tree.targets)
+    when :get then get(*tree.targets)
+    when :drop then drop(*tree.targets)
     when :invoke then invoke(*tree.targets)
     when :go then go(*tree.targets)
     when :save then save
@@ -36,7 +37,7 @@ class Interpreter
   def inventory
     return "You aren't carrying anything." if @inventory.empty?
 
-    puts "You are carrying: #{@inventory.values.join(', ')}"
+    "You are carrying: #{@inventory.values.join(', ')}"
   end
 
   def history
@@ -50,21 +51,37 @@ class Interpreter
   end
 
   def look(name)
-    return look_around unless name
-
-    puts "You look at #{name}."
-  end
-
-  def lookup(name)
-    exit(0) if @current_room.exits[name] == 'exit'
-
-    if @current_room.exits[name]
-      @current_room = @current_room.exits[name]
+    if @current_room.items[name]
+      @current_room.items[name].description
+    else
+      "There isn't a #{name} here to look at."
     end
   end
 
   def invoke(number)
-    @current_room.items[number] = "A number #{number}"
+    @current_room.items[number] = Item.new(
+      summary: number,
+      description: "It is an unremarkable #{number}",
+      type: :number
+    )
+  end
+
+  def get(name)
+    if @current_room.items[name]
+      @inventory[name] = @current_room.items.delete(name)
+      "You get the #{name} and add it to your inventory."
+    else
+      "There isn't a #{name} here to get."
+    end
+  end
+
+  def drop(name)
+    if @inventory[name]
+      @current_room.items[name] = @inventory.delete(name)
+      "You drop the #{name} here."
+    else
+      "You don't have a #{name} to drop"
+    end
   end
 
   def go(name)
@@ -169,6 +186,8 @@ class Interpreter
   end
 
   def save
-    # output @history to file
+    File.open("save.yaml", "w") do |file|
+      @history.find_all(&:targeted?).each { |action| file.write(action.to_yaml) }
+    end
   end
 end

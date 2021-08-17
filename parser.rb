@@ -8,12 +8,23 @@ class Action
     @targets = targets
   end
 
+  def targeted?
+    !targets.empty?
+  end
+
   def to_s
     if targets.empty?
       "<#{action}>"
     else
       "(#{action}: #{targets.join(', ')})"
     end
+  end
+
+  def to_yaml
+<<-YAML
+- action: #{action}
+  targets: [#{targets.join(',')}]
+YAML
   end
 end
 
@@ -26,12 +37,20 @@ class Parser < Rly::Yacc
     statement.value = Action.new(:save)
   end
 
-  rule 'statement : LOOK' do |statement, _look|
-    statement.value = Action.new(:look_around)
+  rule 'statement : LOOK NUMBER | LOOK NAME' do |statement, _look, name|
+    statement.value = Action.new(:look, name.value)
   end
 
-  rule 'statement : LOOK NAME' do |statement, _look, name|
-    statement.value = Action.new(:look, name.value)
+  rule 'statement : GET NUMBER | GET NAME' do |statement, _get, name|
+    statement.value = Action.new(:get, name.value)
+  end
+
+  rule 'statement : DROP NUMBER | DROP NAME' do |statement, _drop, name|
+    statement.value = Action.new(:drop, name.value)
+  end
+
+  rule 'statement : LOOK' do |statement, _look|
+    statement.value = Action.new(:look_around)
   end
 
   rule 'statement : OPEN object' do |statement, _open, object|
