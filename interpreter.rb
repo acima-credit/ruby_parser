@@ -67,7 +67,7 @@ class Interpreter
   def inventory
     return "You aren't carrying anything." if @inventory.empty?
 
-    puts "You are carrying: #{@inventory.values.join(', ')}"
+    "You are carrying: #{@inventory.values.join(', ')}"
   end
 
   def history
@@ -81,9 +81,7 @@ class Interpreter
   end
 
   def look(name)
-    return look_around unless name
-
-    puts "you look at #{name}"
+    "you look at #{name}"
   end
 
   def lookup(name)
@@ -110,6 +108,8 @@ class Interpreter
   end
 
   def save
-    # output @history to file
+    File.open("save.yaml", "w") do |file|
+      @history.find_all(&:targeted?).each { |action| file.write(action.to_yaml) }
+    end
   end
 end

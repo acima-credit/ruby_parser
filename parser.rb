@@ -8,12 +8,23 @@ class Action
     @targets = targets
   end
 
+  def targeted?
+    !targets.empty?
+  end
+
   def to_s
     if targets.empty?
       "<#{action}>"
     else
       "(#{action}: #{targets.join(', ')})"
     end
+  end
+
+  def to_yaml
+<<-YAML
+- action: #{action}
+  targets: [#{targets.join(',')}]
+YAML
   end
 end
 
