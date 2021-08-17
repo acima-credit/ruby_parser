@@ -47,7 +47,7 @@ class Interpreter
   def look(name)
     return look_around unless name
 
-    puts "you look at #{name}"
+    puts "You look at #{name}."
   end
 
   def lookup(name)
@@ -59,7 +59,7 @@ class Interpreter
   end
 
   def invoke(number)
-    @current_room.items[number] = "a number #{number}"
+    @current_room.items[number] = "A number #{number}"
   end
 
   def go(name)
@@ -67,7 +67,7 @@ class Interpreter
 
     if @current_room.exits[name]
       @current_room = @current_room.exits[name]
-      "You go #{name}"
+      "You go #{name}."
     else
       "You can't go that way."
     end

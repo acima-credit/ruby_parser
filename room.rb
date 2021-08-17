@@ -28,7 +28,7 @@ class Room
           rooms[name].set_exit(direction, rooms[destination])
         else
           # Warn us on load if we have a tyop in adventure_rooms.yml
-          puts "ERROR:".bold.white.on_red + " Could not set_exit(#{direction.inspect}, #{destination.inspect}) from room #{name.inspect}: destination does not exist."
+          puts "WARNING:".bold.white.on_red + " rooms[#{name.inspect}].set_exit(#{direction.inspect}, #{destination.inspect}): destination room does not exist."
         end
       end
     end
@@ -37,13 +37,13 @@ class Room
   end
 
   def items_description
-    return "There are no items here" if items.empty?
+    return "There are no items here." if items.empty?
 
-    "You see: #{items.values.map { |i| i.to_s.colorize(:light_blue) }.join(', ')}"
+    "You see: #{items.values.map { |i| i.to_s.colorize(:light_blue) }.join(', ')}."
   end
 
   def exists_description
-    "You don't see any obvious exits" if exits.empty?
+    "You don't see any obvious exits." if exits.empty?
 
     "Exits are: #{exits.keys.map { |k| k.to_s.colorize(:yellow) }.join(', ')}"
   end

@@ -3,13 +3,13 @@
 # to either convert all the code to use strings or to have the code just RIDDLED
 # with calls to .to_sym--enough to make the code noticeably harder to read :(
 :entrance:
-  :description: You are at the entrance to a colossal cave
+  :description: You are at the entrance to a colossal cave. The cave entrance yawns menacingly to the south, while to the east lies a small ranger shack.
   :items: {}
   :exits:
     :exit: :exit
     :south: :cave
 :cave:
-  :description: You are standing in a cave. You can barely make out the walls from the dim light of the opening
+  :description: You are standing in a cave. You can barely make out the walls from the dim light of the opening.
   :items: {}
   :exits:
     :north: :entrance
