@@ -25,9 +25,12 @@ class Interpreter
     when :invoke then invoke(*tree.targets)
     when :go then go(*tree.targets)
     when :save then save
+    else
+      "Interpreter error: Cannot execute action '#{tree.action}'"
     end
   rescue StandardError => e
     puts "Oops: #{e.class} #{e.message}"
+    puts e.backtrace
   end
 
   def inventory
@@ -90,11 +93,18 @@ class Interpreter
     end
   end
 
-  def open(name)
+  def open(names)
+    name = names.last
+    full_name = names.join(' ')
+
     # TODO: open things besides doors, e.g. envelope, chest, trapdoor
     # TODO: disambiguate objects, e.g. open iron door, open blue box
     if name == "door"
-      doors = @current_room.doors
+      doors = if names.size == 1
+                @current_room.doors
+              else
+                @current_room.doors.select {|name, door| door.match?(names.first)}
+              end
 
       case doors.size
       when 0
@@ -104,23 +114,36 @@ class Interpreter
 
         if door.locked?
           "The #{door.name} is locked."
+        elsif door.open?
+          "The #{door.name} is already open."
         else
           door.open!
           "You open the #{door.name}."
         end
       else
-        # TODO: handle door disambiguation here
-        "ERROR:".bold.white.on_red +
-          " Object disambiguation needed -- multiple doors in room: " +
-          doors.values.map(&:name).inspect
+        door_names = doors.map {|name, door| "the #{door.name}"}
+        door_names = door_names[0..-2].join(', ') + " or " + door_names[-1]
+
+        "Which door did you mean, #{door_names}?"
       end
+    else
+      "Sorry, I don't know how to open a #{name}."
     end
   end
 
-  def close(name)
+  def close(names)
     # TODO: THIS IS A STRAIGHT RIP OF def open! Refactor THAT, then fix THIS.
+    name = names.last
+    full_name = names.join(' ')
+
+    # TODO: close things besides doors, e.g. envelope, chest, trapdoor
+    # TODO: disambiguate objects, e.g. close iron door, close blue box
     if name == "door"
-      doors = @current_room.doors
+      doors = if names.size == 1
+                @current_room.doors
+              else
+                @current_room.doors.select {|name, door| door.match?(names.first)}
+              end
 
       case doors.size
       when 0
@@ -128,18 +151,20 @@ class Interpreter
       when 1
         door = doors.values.first
 
-        if door.locked? # yes a door can be locked open
-          "The #{door.name} is locked."
+        if door.closed?
+          "The #{door.name} is already closed."
         else
           door.close!
           "You close the #{door.name}."
         end
       else
-        # TODO: handle door disambiguation here
-        "ERROR:".bold.white.on_red +
-          " Object disambiguation needed -- multiple doors in room: " +
-          doors.values.map(&:name).inspect
+        door_names = doors.map {|name, door| "the #{door.name}"}
+        door_names = door_names[0..-2].join(', ') + " or " + door_names[-1]
+
+        "Which door did you mean, #{door_names}?"
       end
+    else
+      "Sorry, I don't know how to close a #{name}."
     end
   end
 

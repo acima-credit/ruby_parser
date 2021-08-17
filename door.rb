@@ -22,14 +22,15 @@ class Door
               :description_locked,
               :description_open,
               :destination,
-              :state
+              :state,
+              :adjectives
 
   LOCKED = "locked"
   CLOSED = "closed"
   OPEN   = "open"
   STATES = [OPEN, CLOSED, LOCKED]
 
-  def initialize(name:, destination:, state:,
+  def initialize(name:, destination:, state:, adjectives:,
                  description_always:, description_closed:,
                  description_locked:, description_open:)
     raise ArgumentError.new("state must be one of #{STATES.join(',')}") unless STATES.include?(state)
@@ -37,6 +38,7 @@ class Door
     @name = name
     @destination = destination
     @state = state
+    @adjectives = adjectives
     @description_always = description_always
     @description_closed = description_closed
     @description_locked = description_locked
@@ -52,6 +54,10 @@ class Door
             else
               description_open
             end
+  end
+
+  def match?(word)
+    adjectives.include?(word)
   end
 
   def set_exit(room)

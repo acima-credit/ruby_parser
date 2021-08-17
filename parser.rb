@@ -34,12 +34,12 @@ class Parser < Rly::Yacc
     statement.value = Action.new(:look, name.value)
   end
 
-  rule 'statement : OPEN NAME' do |statement, _open, name|
-    statement.value = Action.new(:open, name.value)
+  rule 'statement : OPEN object' do |statement, _open, object|
+    statement.value = Action.new(:open, object.value)
   end
 
-  rule 'statement : CLOSE NAME' do |statement, _close, name|
-    statement.value = Action.new(:close, name.value)
+  rule 'statement : CLOSE object' do |statement, _close, object|
+    statement.value = Action.new(:close, object.value)
   end
 
   rule 'statement : GO NAME' do |statement, _go, name|
@@ -52,5 +52,10 @@ class Parser < Rly::Yacc
 
   rule 'statement : INVOKE NUMBER' do |statement, _invoke, number|
     statement.value = Action.new(:invoke, number.value)
+  end
+
+  rule 'object : NAME
+               | NAME NAME' do |object, adjective, noun|
+    object.value = Array(adjective.value) + Array(noun&.value)
   end
 end

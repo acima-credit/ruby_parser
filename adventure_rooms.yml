@@ -8,6 +8,7 @@ entrance:
     exit: exit
     south: cave
     east: ranger_shack_door
+    west: weird_door
 ranger_shack:
   here: inside the ranger shack
   description: You are inside the ranger shack. A wide window lets you keep an eye on the hooligans coming and going through the cave entrance. This would be an excellent place for an actual ranger to be stationed.

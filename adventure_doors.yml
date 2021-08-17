@@ -1,9 +1,19 @@
 ---
 ranger_shack_door:
-  name: ranger shack door
+  name: shack door
   state: closed
   description_always: The ranger shack has a simple door, which is
-  description_closed: closed.
-  description_open: open.
-  description_locked: locked, which is weird because this is not actually even possible.
+  description_closed: closed
+  description_open: open
+  description_locked: locked, which is weird because this is not actually even possible
   destination: ranger_shack
+  adjectives: [ranger, shack, simple]
+weird_door:
+  name: weird door
+  state: closed
+  description_always: Set in the wall is a small, weird-looking door. The door is
+  description_closed: closed
+  description_open: open
+  description_locked: locked, which is weird because this is not actually even possible
+  destination: cave
+  adjectives: [weird, small, weird-looking]

@@ -32,6 +32,7 @@ class Room
       map.doors[name] = Door.new(
         name: door_data["name"],
         state: door_data["state"],
+        adjectives: door_data["adjectives"],
         description_always: door_data["description_always"],
         description_closed: door_data["description_closed"],
         description_open: door_data["description_open"],
@@ -74,7 +75,7 @@ class Room
   end
 
   def description
-    @description + " " + doors.values.map(&:description).join(' .')
+    @description + " " + doors.values.map(&:description).join(". ") + "."
   end
 
   def items_description
