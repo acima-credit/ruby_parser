@@ -13,6 +13,8 @@ class Lexer < Rly::Lex
   token :INVENTORY, /inventory/
   token :GO, /go/
   token :SAVE, /save/
+  token :GET, /get/
+  token :DROP, /drop/
   token :NUMBER, /\d+\.?\d*/
   token :NAME, /[a-zA-Z_]+/
 

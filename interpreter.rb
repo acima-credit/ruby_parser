@@ -19,6 +19,8 @@ class Interpreter
     when :history then history
     when :look then look(*tree.targets)
     when :look_around then look_around
+    when :get then get(*tree.targets)
+    when :drop then drop(*tree.targets)
     when :invoke then invoke(*tree.targets)
     when :go then go(*tree.targets)
     when :save then save
@@ -44,7 +46,11 @@ class Interpreter
   end
 
   def look(name)
-    @current_room.items[name].description
+    if @current_room.items[name]
+      @current_room.items[name].description
+    else
+      "There isn't a #{name} here to look at."
+    end
   end
 
   def invoke(number)
@@ -53,6 +59,24 @@ class Interpreter
       description: "It is an unremarkable #{number}",
       type: :number
     )
+  end
+
+  def get(name)
+    if @current_room.items[name]
+      @inventory[name] = @current_room.items.delete(name)
+      "You get the #{name} and add it to your inventory."
+    else
+      "There isn't a #{name} here to get."
+    end
+  end
+
+  def drop(name)
+    if @inventory[name]
+      @current_room.items[name] = @inventory.delete(name)
+      "You drop the #{name} here."
+    else
+      "You don't have a #{name} to drop"
+    end
   end
 
   def go(name)

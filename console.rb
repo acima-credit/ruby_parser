@@ -11,7 +11,6 @@ require './interpreter'
 parser = Parser.new(Lexer.new)
 interpreter = Interpreter.new
 
-
 puts 'Literals'
 puts '--------'
 puts Lexer.literals_list.chars.join(' ')

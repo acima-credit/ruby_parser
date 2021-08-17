@@ -37,12 +37,20 @@ class Parser < Rly::Yacc
     statement.value = Action.new(:save)
   end
 
-  rule 'statement : LOOK' do |statement, _look|
-    statement.value = Action.new(:look_around)
+  rule 'statement : LOOK NUMBER | LOOK NAME' do |statement, _look, name|
+    statement.value = Action.new(:look, name.value)
   end
 
-  rule 'statement : LOOK NAME' do |statement, _look, name|
-    statement.value = Action.new(:look, name.value)
+  rule 'statement : GET NUMBER | GET NAME' do |statement, _get, name|
+    statement.value = Action.new(:get, name.value)
+  end
+
+  rule 'statement : DROP NUMBER | DROP NAME' do |statement, _drop, name|
+    statement.value = Action.new(:drop, name.value)
+  end
+
+  rule 'statement : LOOK' do |statement, _look|
+    statement.value = Action.new(:look_around)
   end
 
   rule 'statement : GO NAME' do |statement, _go, name|
