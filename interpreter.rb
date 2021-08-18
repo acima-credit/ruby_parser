@@ -34,8 +34,10 @@ class Interpreter
     end
   end
 
-  def initialize
+  def initialize(parser)
+    @parser = parser
     @call_stack = [Scope.new]
+    @history = []
   end
 
   def current_scope
@@ -55,6 +57,9 @@ class Interpreter
 
     case tree.operation
     when :close then exit(0)
+    when :history then history
+    when :save then save
+    when :load then load
     when :evaluate then evaluate(*tree.arguments)
     when :assign then assign(*tree.arguments)
     when :lookup then lookup(*tree.arguments)
@@ -63,6 +68,7 @@ class Interpreter
     when :function then function(*tree.arguments)
     when :list then list(*tree.arguments)
     when :compose then compose(*tree.arguments)
+    when :branch then branch(*tree.arguments)
 
     when :+ then self.+(*tree.arguments)
     when :- then self.-(*tree.arguments)
@@ -86,6 +92,28 @@ class Interpreter
     puts "error: #{e.class} - #{e.message}"
   rescue StandardError => e
     puts "oops #{e.message}"
+  end
+
+  def parse(buffer)
+    parse_tree = @parser.parse(buffer)
+    @history.push(buffer)
+
+    parse_tree
+  rescue StandardError => e
+    # handle parsing errors
+  end
+
+  def history
+    @history.pop
+    @history.join("\n")
+  end
+
+  def save
+
+  end
+
+  def load
+
   end
 
   def +(x, y)
@@ -264,5 +292,9 @@ class Interpreter
 
   def shuffle(list)
     Operation.new(:list, list.argument.shuffle)
+  end
+
+  def branch(check, left, right)
+    # TODO get this working
   end
 end

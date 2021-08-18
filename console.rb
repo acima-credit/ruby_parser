@@ -8,8 +8,7 @@ require './lexer'
 require './parser'
 require './interpreter'
 
-parser = Parser.new(Lexer.new)
-interpreter = Interpreter.new
+interpreter = Interpreter.new(Parser.new(Lexer.new))
 
 puts 'Literals'.blue
 puts ('-' * 32).blue
@@ -30,7 +29,7 @@ puts "#{'exit'.yellow} to quit"
 puts
 
 while (buffer = Readline.readline('> ', true))
-  parse_tree = parser.parse(buffer)
+  parse_tree = interpreter.parse(buffer)
   puts parse_tree
   puts interpreter.evaluate(parse_tree).to_s.green
 end

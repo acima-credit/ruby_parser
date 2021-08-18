@@ -46,6 +46,21 @@ class Parser < Rly::Yacc
     statement.value = Operation.new(:close)
   end
 
+  rule 'statement : HISTORY'\
+  do |statement, _history|
+    statement.value = Operation.new(:history)
+  end
+
+  rule 'statement : SAVE'\
+  do |statement, _save|
+    statement.value = Operation.new(:save)
+  end
+
+  rule 'statement : LOAD'\
+  do |statement, _load|
+    statement.value = Operation.new(:load)
+  end
+
   rule 'statement : NAME ":" expression'\
   do |statement, name, _assign, expression|
     statement.value = Operation.new(:assign, name.value, expression.value)
@@ -167,12 +182,23 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:list, expression_list.value)
   end
 
+  # ∘ func ⌥ func | func ∘
+  rule 'branch_compose : NAME BRANCH NAME "|" NAME'\
+  do |compose, check, _branch, left, _pipe, right|
+    compose.value = Operation.new(:branch, check.value, left.value, right.value)
+  end
+
   rule 'expression : "[" expression_list "]" COMPOSE NAME'\
   do |expression, _lbracket, list, _rbracket, _compose, name|
     expression.value = Operation.new(:lookup, name.value, list.value)
   end
 
-  rule 'compose_list : COMPOSE NAME | COMPOSE math_compose | COMPOSE NAME compose_list | COMPOSE math_compose compose_list'\
+  rule 'compose_list : COMPOSE NAME
+  | COMPOSE math_compose
+  | COMPOSE branch_compose
+  | COMPOSE NAME compose_list
+  | COMPOSE math_compose compose_list
+  | COMPOSE branch_compose compose_list'\
   do |compose_list, _compose, name, list|
     compose_list.value = Array(name.value) + Array(list&.value)
   end
@@ -182,8 +208,8 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:compose, exp.value, list.value)
   end
 
-  rule 'math_compose :
-    ANON_FUNC "+" NUMBER
+  # This is currently broken
+  rule 'math_compose : ANON_FUNC "+" NUMBER
   | ANON_FUNC "-" NUMBER
   | ANON_FUNC "*" NUMBER
   | ANON_FUNC "/" NUMBER
@@ -193,9 +219,4 @@ class Parser < Rly::Yacc
     expression = Operation.new(operator.value.to_sym, Operation.new(:lookup, '___'), Operation.new(:number, number.value.to_i))
     compose.value = Operation.new(:function, '___', expression)
   end
-
-  # rule 'branch_compose : expression BRANCH expression "|" expression'\
-  # do |compose, check, _branch, branch1, _pipe, branch2|
-
-  # end
 end

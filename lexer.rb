@@ -8,6 +8,9 @@ class Lexer < Rly::Lex
 
   token :EXIT, /exit/
   token :QUIT, /quit/
+  token :HISTORY, /history/
+  token :SAVE, /save/
+  token :LOAD, /load/
   token :GTE, /><>/
   token :LTE, /<></
   token :EQ, /<>/
