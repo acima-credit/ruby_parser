@@ -54,6 +54,7 @@ class Interpreter
     type_check!(tree, Operation, OperationTypeError)
 
     case tree.operation
+    when :close then exit(0)
     when :evaluate then evaluate(*tree.arguments)
     when :assign then assign(*tree.arguments)
     when :lookup then lookup(*tree.arguments)
@@ -69,6 +70,15 @@ class Interpreter
     when :/ then self./(*tree.arguments)
     when :% then self.%(*tree.arguments)
     when :^ then self.^(*tree.arguments)
+
+    when :lt then lt(*tree.arguments)
+    when :gt then gt(*tree.arguments)
+    when :eq then eq(*tree.arguments)
+    when :neq then neq(*tree.arguments)
+    when :lte then lte(*tree.arguments)
+    when :gte then gte(*tree.arguments)
+    when :not then invert(*tree.arguments)
+
     else
       raise UnknownOperationError, tree.operation
     end
@@ -136,6 +146,34 @@ class Interpreter
     else
       value ** evaluate(bbb)
     end
+  end
+
+  def lt(exp1, exp2)
+    evaluate(exp1) < evaluate(exp2)
+  end
+
+  def gt(exp1, exp2)
+    evaluate(exp1) > evaluate(exp2)
+  end
+
+  def eq(exp1, exp2)
+    evaluate(exp1) == evaluate(exp2)
+  end
+
+  def neq(exp1, exp2)
+    evaluate(exp1) != evaluate(exp2)
+  end
+
+  def lte(exp1, exp2)
+    evaluate(exp1) <= evaluate(exp2)
+  end
+
+  def gte(exp1, exp2)
+    evaluate(exp1) >= evaluate(exp2)
+  end
+
+  def invert(exp)
+    !evaluate(exp)
   end
 
   def assign(name, value)

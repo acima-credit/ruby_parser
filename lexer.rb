@@ -3,14 +3,24 @@
 require 'rly'
 
 class Lexer < Rly::Lex
-  literals '+-*/%=^()\\,.[]{}|'
+  literals '+-*/%:^()\\,.[]{}~'
   ignore " \t\n"
 
+  token :EXIT, /exit/
+  token :QUIT, /quit/
+  token :GTE, /><>/
+  token :LTE, /<></
+  token :EQ, /<>/
+  token :NEQ, /></
+  token :LT, /</
+  token :GT, />/
   token :NUMBER, /\d+\.?\d*/
-  token :NAME, /[a-zA-Z_]\w{2,}/ # variable names must be at least 3 characters
-  token :FNAME, /ƒ[a-zA-Z_]\w{2,}/ # function name must be at least 3 characters
+  token :NAME, /[a-zA-Z_]+/
+  token :FNAME, /ƒ[a-zA-Z_]+/
   token :LAMBDA, /λ/
   token :COMPOSE, /∘/
+  token :BRANCH, /⌥/
+  token :FUNCTION, /ƒ/
 
   on_error do |t|
     puts "Illegal character #{t.value}"

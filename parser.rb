@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'forwardable'
+require 'colorize'
 class Operation
   extend Forwardable
 
@@ -22,7 +23,11 @@ class Operation
   end
 
   def to_s
-    "(#{operation}: #{arguments.join(', ')})"
+    if argument.is_a?(self.class)
+      "(#{operation.to_s.magenta}: #{arguments.join(', ')})"
+    else
+      "(#{operation.to_s.magenta}: #{argument.to_s.yellow})"
+    end
   end
 end
 
@@ -32,7 +37,12 @@ class Parser < Rly::Yacc
   precedence :left, '^'
   precedence :right, :NEGATIVE
 
-  rule 'statement : NAME "=" expression'\
+  rule 'statement : EXIT | QUIT'\
+  do |statement, _close|
+    statement.value = Operation.new(:close)
+  end
+
+  rule 'statement : NAME ":" expression'\
   do |statement, name, _, expression|
     statement.value = Operation.new(:assign, name.value, expression.value)
   end
@@ -42,7 +52,7 @@ class Parser < Rly::Yacc
     statement.value = Operation.new(:evaluate, expression.value)
   end
 
-  rule 'expression : "-" expression %prec UMINUS'\
+  rule 'expression : "-" expression %prec NEGATIVE'\
   do |expression, _neg, exp|
     expression.value = Operation.new(:negate, exp.value)
   end
@@ -82,10 +92,43 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:^, a.value, b.value)
   end
 
+  rule 'expression : expression LTE expression'\
+  do |expression, exp1, _lte, exp2|
+    expression.value = Operation.new(:lte, exp1.value, exp2.value)
+  end
+
+  rule 'expression : "~" expression'\
+  do |expression, _not, exp|
+    expression.value = Operation.new(:not, exp.value)
+  end
+
+  rule 'expression : expression GTE expression'\
+  do |expression, exp1, _gte, exp2|
+    expression.value = Operation.new(:gte, exp1.value, exp2.value)
+  end
+
+  rule 'expression : expression NEQ expression'\
+  do |expression, exp1, _neq, exp2|
+    expression.value = Operation.new(:neq, exp1.value, exp2.value)
+  end
+
+  rule 'expression : expression LT expression'\
+  do |expression, exp1, _lt, exp2|
+    expression.value = Operation.new(:lt, exp1.value, exp2.value)
+  end
+
+  rule 'expression : expression GT expression'\
+  do |expression, exp1, _gt, exp2|
+    expression.value = Operation.new(:gt, exp1.value, exp2.value)
+  end
+
+  rule 'expression : expression EQ expression'\
+  do |expression, exp1, _eq, exp2|
+    expression.value = Operation.new(:eq, exp1.value, exp2.value)
+  end
+
   rule 'expression : NAME'\
   do |expression, name|
-    exit(0) if %w[quit exit].include?(name.value)
-
     expression.value = Operation.new(:lookup, name.value)
   end
 
@@ -136,14 +179,14 @@ class Parser < Rly::Yacc
   end
 
   rule 'math_compose :
-      "|" "+" NUMBER "|"
-    | "|" "-" NUMBER "|"
-    | "|" "*" NUMBER "|"
-    | "|" "/" NUMBER "|"
-    | "|" "%" NUMBER "|"
-    | "|" "^" NUMBER "|"'\
-  do |compose, _lpipe, operator, number, _rpipe|
-    expression = Operation.new(operator.value.to_sym, Operation.new(:lookup, 'abc'), Operation.new(:number, number.value.to_i))
-    compose.value = Operation.new(:function, 'abc', expression)
+    FUNCTION "+" NUMBER
+  | FUNCTION "-" NUMBER
+  | FUNCTION "*" NUMBER
+  | FUNCTION "/" NUMBER
+  | FUNCTION "%" NUMBER
+  | FUNCTION "^" NUMBER'\
+  do |compose, _function, operator, number|
+    expression = Operation.new(operator.value.to_sym, Operation.new(:lookup, '___'), Operation.new(:number, number.value.to_i))
+    compose.value = Operation.new(:function, '___', expression)
   end
 end
