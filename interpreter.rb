@@ -54,9 +54,13 @@ class Interpreter
 
   # TODO: pass the parameters values to the function evaluation
   def evaluate_function(function_name, parameters)
-    binding.pry
+    function_params = current_scope.name[function_name.value].params.flatten
+    parameters.each_with_index do |param, index|
+      # binding.pry      
+      current_scope.name[function_params[index]] = evaluate(param)
+    end
     # current_scope.name[function_name.value]
-    # evaluate()
+    evaluate(current_scope.name[function_name.value].body)
   end
 
   def function(params, body)
@@ -71,11 +75,12 @@ class Interpreter
     number.to_i
   end
   
-  #a = $(x) ~> x + 1
-  #b = $(x,y) ~> x + y
+  # a = $(x) ~> x + 1
+  # b = $(x,y) ~> x + y
   def lookup(name)
     value = current_scope.name[name]
     return evaluate(value.body) if value.is_a?(Function)
+    value
   end
 
   def addition(value_1, value_2)
