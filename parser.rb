@@ -1,6 +1,8 @@
 # frozen_string_literal: true
+
 require 'forwardable'
 require 'colorize'
+
 class Operation
   extend Forwardable
 
@@ -32,6 +34,8 @@ class Operation
 end
 
 class Parser < Rly::Yacc
+  precedence :left, '~'
+  precedence :left, :GTE, :LTE, :GT, :LT, :EQ, :NEQ
   precedence :left, '+', '-'
   precedence :left, '*', '/', '%'
   precedence :left, '^'
@@ -43,7 +47,7 @@ class Parser < Rly::Yacc
   end
 
   rule 'statement : NAME ":" expression'\
-  do |statement, name, _, expression|
+  do |statement, name, _assign, expression|
     statement.value = Operation.new(:assign, name.value, expression.value)
   end
 
@@ -99,7 +103,7 @@ class Parser < Rly::Yacc
 
   rule 'expression : "~" expression'\
   do |expression, _not, exp|
-    expression.value = Operation.new(:not, exp.value)
+    expression.value = Operation.new(:~, exp.value)
   end
 
   rule 'expression : expression GTE expression'\
@@ -179,14 +183,19 @@ class Parser < Rly::Yacc
   end
 
   rule 'math_compose :
-    FUNCTION "+" NUMBER
-  | FUNCTION "-" NUMBER
-  | FUNCTION "*" NUMBER
-  | FUNCTION "/" NUMBER
-  | FUNCTION "%" NUMBER
-  | FUNCTION "^" NUMBER'\
+    ANON_FUNC "+" NUMBER
+  | ANON_FUNC "-" NUMBER
+  | ANON_FUNC "*" NUMBER
+  | ANON_FUNC "/" NUMBER
+  | ANON_FUNC "%" NUMBER
+  | ANON_FUNC "^" NUMBER'\
   do |compose, _function, operator, number|
     expression = Operation.new(operator.value.to_sym, Operation.new(:lookup, '___'), Operation.new(:number, number.value.to_i))
     compose.value = Operation.new(:function, '___', expression)
   end
+
+  # rule 'branch_compose : expression BRANCH expression "|" expression'\
+  # do |compose, check, _branch, branch1, _pipe, branch2|
+
+  # end
 end

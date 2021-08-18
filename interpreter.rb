@@ -77,7 +77,7 @@ class Interpreter
     when :neq then neq(*tree.arguments)
     when :lte then lte(*tree.arguments)
     when :gte then gte(*tree.arguments)
-    when :not then invert(*tree.arguments)
+    when :~ then self.~(*tree.arguments)
 
     else
       raise UnknownOperationError, tree.operation
@@ -88,64 +88,28 @@ class Interpreter
     puts "oops #{e.message}"
   end
 
-  def +(aaa, bbb)
-    value = evaluate(aaa)
-    if value.is_a?(Operation) && value.list?
-      result = value.map { |op| Operation.new(:number, evaluate(op) + evaluate(bbb)) }
-      Operation.new(:list, result)
-    else
-      value + evaluate(bbb)
-    end
+  def +(x, y)
+    evaluate(x) + evaluate(y)
   end
 
-  def -(aaa, bbb)
-    value = evaluate(aaa)
-    if value.is_a?(Operation) && value.list?
-      result = value.map { |op| Operation.new(:number, evaluate(op) - evaluate(bbb)) }
-      Operation.new(:list, result)
-    else
-      value - evaluate(bbb)
-    end
+  def -(x, y)
+    evaluate(x) - evaluate(y)
   end
 
-  def *(aaa, bbb)
-    value = evaluate(aaa)
-    if value.is_a?(Operation) && value.list?
-      result = value.map { |op| Operation.new(:number, evaluate(op) * evaluate(bbb)) }
-      Operation.new(:list, result)
-    else
-      value * evaluate(bbb)
-    end
+  def *(x, y)
+    evaluate(x) * evaluate(y)
   end
 
-  def /(aaa, bbb)
-    value = evaluate(aaa)
-    if value.is_a?(Operation) && value.list?
-      result = value.map { |op| Operation.new(:number, evaluate(op) / evaluate(bbb)) }
-      Operation.new(:list, result)
-    else
-      value / evaluate(bbb)
-    end
+  def /(x, y)
+    evaluate(x) / evaluate(y)
   end
 
-  def %(aaa, bbb)
-    value = evaluate(aaa)
-    if value.is_a?(Operation) && value.list?
-      result = value.map { |op| Operation.new(:number, evaluate(op) % evaluate(bbb)) }
-      Operation.new(:list, result)
-    else
-      value % evaluate(bbb)
-    end
+  def %(x, y)
+    evaluate(x) % evaluate(y)
   end
 
-  def ^(aaa, bbb)
-    value = evaluate(aaa)
-    if value.is_a?(Operation) && value.list?
-      result = value.map { |op| Operation.new(:number, evaluate(op) ** evaluate(bbb)) }
-      Operation.new(:list, result)
-    else
-      value ** evaluate(bbb)
-    end
+  def ^(x, y)
+    evaluate(x) ** evaluate(y)
   end
 
   def lt(exp1, exp2)
@@ -172,7 +136,7 @@ class Interpreter
     evaluate(exp1) >= evaluate(exp2)
   end
 
-  def invert(exp)
+  def ~(exp)
     !evaluate(exp)
   end
 

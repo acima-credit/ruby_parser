@@ -3,7 +3,7 @@
 require 'rly'
 
 class Lexer < Rly::Lex
-  literals '+-*/%:^()\\,.[]{}~'
+  literals '+-*/%:^()\\,.[]{}~|'
   ignore " \t\n"
 
   token :EXIT, /exit/
@@ -20,7 +20,7 @@ class Lexer < Rly::Lex
   token :LAMBDA, /λ/
   token :COMPOSE, /∘/
   token :BRANCH, /⌥/
-  token :FUNCTION, /ƒ/
+  token :ANON_FUNC, /ƒ/
 
   on_error do |t|
     puts "Illegal character #{t.value}"
