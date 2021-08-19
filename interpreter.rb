@@ -22,6 +22,7 @@ class Interpreter
     when :/ then self./(*tree.arguments)
     when :% then self.%(*tree.arguments)
     when :^ then self.^(*tree.arguments)
+    when :comment then self.comment(*tree.arguments)
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
@@ -65,5 +66,9 @@ class Interpreter
 
   def negate(value)
     -1 * evaluate(value)
+  end
+
+  def comment(value)
+    puts value
   end
 end

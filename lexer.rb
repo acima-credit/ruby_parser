@@ -26,7 +26,8 @@ class Lexer < Rly::Lex
   ignore " \t\n\r"
 
   token :NUMBER, /\d+\.?\d*/
-  token :NAME, /[a-zA-Z_]\w{2,}/ # variable names must be at least 3 characters
+  token :NAME, /[a-zA-Z_]\w*/ # variable names must be at least 3 characters
+  token :COMMENT, /#.*/
 
   on_error do |t|
     puts "Illegal character #{t.value}"

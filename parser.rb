@@ -68,4 +68,12 @@ class Parser < Rly::Yacc
   rule 'expression : NUMBER' do |expression, number|
     expression.value = Operation.new(:number, number.value.to_i)
   end
+
+  rule 'expression : expression COMMENT' do |expression, commented_expression, _|
+    expression.value = Operation.new(:evaluate, commented_expression.value)
+  end
+
+  rule 'expression : COMMENT' do |expression, comment|
+    expression.value = Operation.new(:comment, comment.value)
+  end
 end
