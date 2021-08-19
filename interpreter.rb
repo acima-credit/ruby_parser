@@ -121,6 +121,8 @@ class Interpreter
   def load
     @history.pop # don't record the "load" statement
     File.open("save.txt", "r").each_line do |line|
+      next if line.chars.first =~ /[\W\#]/
+
       tree = parse(line)
       puts tree
       evaluate(tree)
@@ -245,6 +247,7 @@ class Interpreter
 
     expression =
       case func
+      when 'cast' then return cast(list)
       when 'first' then first(list)
       when 'rest' then rest(list)
       when 'last' then last(list)
@@ -271,12 +274,12 @@ class Interpreter
   end
 
   def compose_branch(list, branch)
-    control = current_scope.names[branch.arguments[0]]
+    control_function = current_scope.names[branch.arguments[0]]
     truthy_function = current_scope.names[branch.arguments[1]]
     falsey_function = current_scope.names[branch.arguments[2]]
 
     result = list.map do |value|
-      if evaluate_function(control, Array(value))
+      if evaluate_function(control_function, Array(value))
         evaluate_function(truthy_function, Array(value))
       else
         evaluate_function(falsey_function, Array(value))
@@ -288,6 +291,10 @@ class Interpreter
 
   def type_check!(value, type, error)
     raise error, value.inspect unless value.is_a?(type)
+  end
+
+  def cast(list)
+    evaluate(list.map.first)
   end
 
   def first(list)

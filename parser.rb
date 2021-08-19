@@ -189,13 +189,8 @@ class Parser < Rly::Yacc
 
   # ∘ func ⌥ func | func ∘
   rule 'branch_compose : NAME BRANCH NAME "|" NAME'\
-  do |compose, check, _branch, left, _pipe, right|
-    compose.value = Operation.new(:branch, check.value, left.value, right.value)
-  end
-
-  rule 'expression : "[" expression_list "]" COMPOSE NAME'\
-  do |expression, _lbracket, list, _rbracket, _compose, name|
-    expression.value = Operation.new(:lookup, name.value, list.value)
+  do |compose, check, _branch, truthy, _pipe, falsey|
+    compose.value = Operation.new(:branch, check.value, truthy.value, falsey.value)
   end
 
   rule 'compose_list : COMPOSE NAME
@@ -209,8 +204,8 @@ class Parser < Rly::Yacc
   end
 
   rule 'expression : expression compose_list'\
-  do |expression, exp, list|
-    expression.value = Operation.new(:compose, exp.value, list.value)
+  do |expression, list_expression, composers|
+    expression.value = Operation.new(:compose, list_expression.value, composers.value)
   end
 
   # This is currently broken
