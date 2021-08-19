@@ -83,4 +83,13 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:^, number_a.value, number_b.value)
   end
 
+
+  # conditionals
+
+  # if <conditional statement> then <>  else end
+
+  rule 'expression : expression EQ expression' do |expression, expresion_a, _equals, expression_b|
+    expression.value = Operation.new(:==, expresion_a.value, expression_b.value)
+  end
+
 end

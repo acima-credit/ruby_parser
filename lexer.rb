@@ -10,6 +10,7 @@ class Lexer < Rly::Lex
   token :NAME, /[a-zA-Z]+/
   token :FUNCTION, /\$/
   token :FUNCTION_ARROW, /~>/
+  token :EQ, /\=\=/
 
   on_error do |t|
     puts "Illegal character #{t.value}"

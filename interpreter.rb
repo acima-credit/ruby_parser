@@ -47,19 +47,33 @@ class Interpreter
     when :/ then divide(*tree.arguments)
     when :% then modulo(*tree.arguments)
     when :^ then exponent(*tree.arguments)
+    when :== then equals(*tree.arguments)
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
   end
 
-  # TODO: pass the parameters values to the function evaluation
+
+  def equals(value_1, value_2)
+    evaluate(value_1) == evaluate(value_2)
+  end
+
+  # TODO: code  !=, >, <, >=, <=
+  
+
+  # a = $(x) ~> x + 1
+  # b = $(y) ~> a(y) * 2
+  # b(2)
+
+  # z = $(x,y) ~> x + y
+  # y = $(t) ~> z(t,2) * 10
+  # y(2)
+
   def evaluate_function(function_name, parameters)
     function_params = current_scope.name[function_name.value].params.flatten
     parameters.each_with_index do |param, index|
-      # binding.pry      
       current_scope.name[function_params[index]] = evaluate(param)
     end
-    # current_scope.name[function_name.value]
     evaluate(current_scope.name[function_name.value].body)
   end
 
