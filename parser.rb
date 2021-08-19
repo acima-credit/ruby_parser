@@ -24,12 +24,12 @@ class Operation
     operation == :function
   end
 
+  def branch?
+    operation == :branch
+  end
+
   def to_s
-    if argument.is_a?(self.class)
-      "(#{operation.to_s.magenta}: #{arguments.join(', ')})"
-    else
-      "(#{operation.to_s.magenta}: #{argument.to_s.yellow})"
-    end
+    "(#{operation.to_s.yellow}: #{arguments.join(', ')})"
   end
 end
 
@@ -49,6 +49,11 @@ class Parser < Rly::Yacc
   rule 'statement : HISTORY'\
   do |statement, _history|
     statement.value = Operation.new(:history)
+  end
+
+  rule 'statement : CLEAR'\
+  do |statement, _clear|
+    statement.value = Operation.new(:clear)
   end
 
   rule 'statement : SAVE'\

@@ -58,6 +58,7 @@ class Interpreter
     case tree.operation
     when :close then exit(0)
     when :history then history
+    when :clear then clear
     when :save then save
     when :load then load
     when :evaluate then evaluate(*tree.arguments)
@@ -68,7 +69,6 @@ class Interpreter
     when :function then function(*tree.arguments)
     when :list then list(*tree.arguments)
     when :compose then compose(*tree.arguments)
-    when :branch then branch(*tree.arguments)
 
     when :+ then self.+(*tree.arguments)
     when :- then self.-(*tree.arguments)
@@ -104,16 +104,28 @@ class Interpreter
   end
 
   def history
-    @history.pop
+    @history.pop # don't record the "history" statement
     @history.join("\n")
   end
 
-  def save
+  def clear
+    @history.clear
+  end
 
+  def save
+    @history.pop # don't record the "save" statement
+    File.write("save.txt", @history.join("\n"))
+    "saved"
   end
 
   def load
-
+    @history.pop # don't record the "load" statement
+    File.open("save.txt", "r").each_line do |line|
+      tree = parse(line)
+      puts tree
+      evaluate(tree)
+    end
+    "loaded"
   end
 
   def +(x, y)
@@ -229,9 +241,10 @@ class Interpreter
 
     return list if function_names.empty?
 
-    name = function_names.shift
+    func = function_names.shift
+
     expression =
-      case name
+      case func
       when 'first' then first(list)
       when 'rest' then rest(list)
       when 'last' then last(list)
@@ -240,17 +253,35 @@ class Interpreter
       when 'sort' then sort(list)
       when 'sample' then sample(list)
       when 'shuffle' then shuffle(list)
-      else compose_function(list, name)
+      else compose_function(list, func)
       end
 
     compose(expression, function_names)
   end
 
   def compose_function(list, name)
+    return compose_branch(list, name) if name.is_a?(Operation) && name.branch?
+
     function = current_scope.names[name]
     type_check!(function, Function, FunctionTypeError)
 
     result = list.map { |value| Operation.new(:number, evaluate_function(function, Array(value))) }
+
+    Operation.new(:list, result)
+  end
+
+  def compose_branch(list, branch)
+    control = current_scope.names[branch.arguments[0]]
+    truthy_function = current_scope.names[branch.arguments[1]]
+    falsey_function = current_scope.names[branch.arguments[2]]
+
+    result = list.map do |value|
+      if evaluate_function(control, Array(value))
+        evaluate_function(truthy_function, Array(value))
+      else
+        evaluate_function(falsey_function, Array(value))
+      end
+    end
 
     Operation.new(:list, result)
   end
@@ -292,9 +323,5 @@ class Interpreter
 
   def shuffle(list)
     Operation.new(:list, list.argument.shuffle)
-  end
-
-  def branch(check, left, right)
-    # TODO get this working
   end
 end
