@@ -86,6 +86,17 @@ class Parser < Rly::Yacc
     expression.value = exp.value
   end
 
+  rule 'function_body : expression | expression "." function_body'\
+  do |function_body, exp, _period, body|
+    function_body.value = Array(exp.value) + Array(body&.value)
+  end
+
+  rule 'expression : LAMBDA "\" parameter_list "\" function_body | LAMBDA "." "." "." function_body'\
+  do |expression, _lambda, _, params, _, function_body|
+    list = params.value == '.' ? [] : params.value
+    expression.value = Operation.new(:function, list, function_body.value)
+  end
+
   rule 'expression : expression "+" expression'\
   do |expression, a, _operation, b|
     expression.value = Operation.new(:+, a.value, b.value)
@@ -174,12 +185,6 @@ class Parser < Rly::Yacc
   rule 'expression_list : expression | expression "," expression_list'\
   do |expression_list, exp, _comma, list|
     expression_list.value = Array(exp.value) + Array(list&.value)
-  end
-
-  rule 'expression : LAMBDA "\" parameter_list "\" expression | LAMBDA "." "." "." expression'\
-  do |expression, _lambda, _, params, _, exp|
-    list = params.value == '.' ? [] : params.value
-    expression.value = Operation.new(:function, list, exp.value)
   end
 
   rule 'expression : "{" expression_list "}"'\

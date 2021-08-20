@@ -1,3 +1,6 @@
+# TODO: fix anonymous math functions
+# TODO: fix assignment in function definition
+
 class Interpreter
   Error                 = Class.new(StandardError)
   UnknownOperationError = Class.new(Error)
@@ -18,11 +21,11 @@ class Interpreter
   end
 
   class Function
-    attr_accessor :params, :expression
+    attr_accessor :params, :body
 
-    def initialize(params, expression)
+    def initialize(params, body)
       @params = params
-      @expression = expression
+      @body = body
     end
 
     def arity
@@ -220,7 +223,8 @@ class Interpreter
           assign(param, values[index])
         end
       end
-      evaluate(function.expression)
+
+      function.body.map { |expression| evaluate(expression) }.last
     end
   end
 
