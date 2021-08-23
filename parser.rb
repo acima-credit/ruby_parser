@@ -92,4 +92,24 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:==, expresion_a.value, expression_b.value)
   end
 
+  rule 'expression : expression NOT_EQ expression' do |expression, expresion_a, _not_equals, expression_b|
+    expression.value = Operation.new(:!=, expresion_a.value, expression_b.value)
+  end
+
+  rule 'expression : expression GT expression' do |expression, expresion_a, _greater_than, expression_b|
+    expression.value = Operation.new(:>, expresion_a.value, expression_b.value)
+  end
+
+  rule 'expression : expression LT expression' do |expression, expresion_a, _lower_than, expression_b|
+    expression.value = Operation.new(:<, expresion_a.value, expression_b.value)
+  end
+
+  rule 'expression : expression GET expression' do |expression, expresion_a, _greater_equal_than, expression_b|
+    expression.value = Operation.new(:>=, expresion_a.value, expression_b.value)
+  end
+
+  rule 'expression : expression LET expression' do |expression, expresion_a, _lower_equal_than, expression_b|
+    expression.value = Operation.new(:<=, expresion_a.value, expression_b.value)
+  end
+
 end

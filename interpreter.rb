@@ -47,7 +47,15 @@ class Interpreter
     when :/ then divide(*tree.arguments)
     when :% then modulo(*tree.arguments)
     when :^ then exponent(*tree.arguments)
+    
+    when :>= then greater_or_equal_than(*tree.arguments)
+    when :<= then lower_or_equal_than(*tree.arguments)
     when :== then equals(*tree.arguments)
+    when :!= then not_equals(*tree.arguments)
+    when :> then greater_than(*tree.arguments)
+    when :< then lower_than(*tree.arguments)
+    
+
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
@@ -58,8 +66,28 @@ class Interpreter
     evaluate(value_1) == evaluate(value_2)
   end
 
-  # TODO: code  !=, >, <, >=, <=
-  
+  def not_equals(value_1, value_2)
+    evaluate(value_1) != evaluate(value_2)
+  end
+
+  def greater_than(value_1, value_2)
+    evaluate(value_1) > evaluate(value_2)
+  end
+
+  def lower_than(value_1, value_2)
+    evaluate(value_1) < evaluate(value_2)
+  end
+
+  def greater_or_equal_than(value_1, value_2)
+    evaluate(value_1) >= evaluate(value_2)
+  end
+
+  def lower_or_equal_than(value_1, value_2)
+    evaluate(value_1) <= evaluate(value_2)
+  end
+
+  # TODO:  cond ? exp1 : exp2
+
 
   # a = $(x) ~> x + 1
   # b = $(y) ~> a(y) * 2
