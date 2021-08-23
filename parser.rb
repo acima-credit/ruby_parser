@@ -86,7 +86,7 @@ class Parser < Rly::Yacc
     expression.value = exp.value
   end
 
-  rule 'function_body : expression | expression "." function_body'\
+  rule 'function_body : expression | expression "." function_body | statement "." function_body'\
   do |function_body, exp, _period, body|
     function_body.value = Array(exp.value) + Array(body&.value)
   end

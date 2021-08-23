@@ -1,5 +1,5 @@
 # TODO: fix anonymous math functions
-# TODO: fix assignment in function definition
+# TODO: Figure out how to do REAL multilines : Load it to a file, watch for beginning/ending.
 
 class Interpreter
   Error                 = Class.new(StandardError)

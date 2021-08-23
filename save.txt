@@ -1,0 +1,12 @@
+even: λ\w\ w % 2 <> 0
+
+echo: λ\x\ x
+
+adder: λ\y\ y + 1
+
+multiplier: λ\z\ z * 2
+
+multiline: λ\z\ x: z + 1 . y: x * 2 . x + y
+
+
+
