@@ -6,7 +6,9 @@ adder: λ\y\ y + 1
 
 multiplier: λ\z\ z * 2
 
-multiline: λ\z\ x: z + 1 . y: x * 2 . x + y
+multiline: λ\z\
+ x: z + 1 .
+ y: x * 2 .
+ x + y
 
-
-
+# This should be deleted

@@ -123,13 +123,32 @@ class Interpreter
 
   def load
     @history.pop # don't record the "load" statement
-    File.open("save.txt", "r").each_line do |line|
-      next if line.chars.first =~ /[\W\#]/
+    # File.open("save.txt", "r").each_line do |line|
+    #   next if line.chars.first =~ /[\W\#]/
 
-      tree = parse(line)
-      puts tree
-      evaluate(tree)
+    #   tree = parse(line)
+    #   puts tree
+    #   evaluate(tree)
+    # end
+
+    #read file line by line and stick in an array
+    # Remove comments
+    # append to previous if line starts with whitespace lines
+
+    lines_array = File.readlines("save.txt")
+    lines_array.delete_if do |line|
+      line.chars.first =~ /\#|\n/
     end
+    lines_array.reverse.each_with_index do |line, index|
+      # if line starts with a space character
+      if line.chars.first =~ /\s/
+        binding.pry
+        # Append to next line
+        lines_array.reverse[index + 1] << line
+        lines_array.delete_at(index)
+      end
+    end
+    binding.pry
     "loaded"
   end
 
