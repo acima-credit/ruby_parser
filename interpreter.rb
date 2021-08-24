@@ -54,6 +54,9 @@ class Interpreter
     when :!= then not_equals(*tree.arguments)
     when :> then greater_than(*tree.arguments)
     when :< then lower_than(*tree.arguments)
+    when :ternary then ternary(*tree.arguments)
+    when :and then and_function(*tree.arguments)
+    when :or then or_function(*tree.arguments)
     
 
     else
@@ -86,7 +89,19 @@ class Interpreter
     evaluate(value_1) <= evaluate(value_2)
   end
 
-  # TODO:  cond ? exp1 : exp2
+  def ternary(value_1, value_2, value_3)
+    evaluate(value_1.first) ? evaluate(value_2) : evaluate(value_3)
+  end
+
+  def and_function(value_1, value_2)
+    evaluate(value_1) && evaluate(value_2)
+  end
+
+  def or_function(value_1, value_2)
+    evaluate(value_1) || evaluate(value_2)
+  end
+
+  # TODO:  Fix the && and OR rules in the parser
 
 
   # a = $(x) ~> x + 1

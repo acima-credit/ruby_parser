@@ -88,28 +88,39 @@ class Parser < Rly::Yacc
 
   # if <conditional statement> then <>  else end
 
-  rule 'expression : expression EQ expression' do |expression, expresion_a, _equals, expression_b|
-    expression.value = Operation.new(:==, expresion_a.value, expression_b.value)
+  rule 'expression : expression EQ expression' do |expression, expression_a, _equals, expression_b|
+    expression.value = Operation.new(:==, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression NOT_EQ expression' do |expression, expresion_a, _not_equals, expression_b|
-    expression.value = Operation.new(:!=, expresion_a.value, expression_b.value)
+  rule 'expression : expression NOT_EQ expression' do |expression, expression_a, _not_equals, expression_b|
+    expression.value = Operation.new(:!=, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression GT expression' do |expression, expresion_a, _greater_than, expression_b|
-    expression.value = Operation.new(:>, expresion_a.value, expression_b.value)
+  rule 'expression : expression GT expression' do |expression, expression_a, _greater_than, expression_b|
+    expression.value = Operation.new(:>, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression LT expression' do |expression, expresion_a, _lower_than, expression_b|
-    expression.value = Operation.new(:<, expresion_a.value, expression_b.value)
+  rule 'expression : expression LT expression' do |expression, expression_a, _lower_than, expression_b|
+    expression.value = Operation.new(:<, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression GET expression' do |expression, expresion_a, _greater_equal_than, expression_b|
-    expression.value = Operation.new(:>=, expresion_a.value, expression_b.value)
+  rule 'expression : expression GET expression' do |expression, expression_a, _greater_equal_than, expression_b|
+    expression.value = Operation.new(:>=, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression LET expression' do |expression, expresion_a, _lower_equal_than, expression_b|
-    expression.value = Operation.new(:<=, expresion_a.value, expression_b.value)
+  rule 'expression : expression LET expression' do |expression, expression_a, _lower_equal_than, expression_b|
+    expression.value = Operation.new(:<=, expression_a.value, expression_b.value)
   end
 
+  rule 'expression : expression TERNARY_QUESTION expression TERNARY_COLON expression' do |expression, expression_a, _question, expression_b, _colon, expression_c|
+    expression.value = Operation.new(:ternary, expression_a.value, expression_b.value, expression_c.value)
+  end
+
+  rule 'expression_list : expression | expression AND expression_list' do |expression, expression_a, _and, expression_b|
+    expression.value = Operation.new(:and, expression_a.value, expression_b.value)
+  end
+
+  rule 'expression_list : expression | expression OR expression_list' do |expression, expression_a, _or, expression_b|
+    expression.value = Operation.new(:or, expression_a.value, expression_b.value)
+  end
 end
