@@ -6,9 +6,10 @@ adder: λ\y\ y + 1
 
 multiplier: λ\z\ z * 2
 
+# This is a comment that won't get evaluated
 multiline: λ\z\
- x: z + 1 .
- y: x * 2 .
- x + y
+  x: z + 1 .
+  y: x * 2 .
+  x + y
 
-# This should be deleted
+apple: λ\x\ {x} ∘ apple

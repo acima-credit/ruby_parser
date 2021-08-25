@@ -7,6 +7,7 @@ class Interpreter
   OperationTypeError    = Class.new(Error)
   FunctionTypeError     = Class.new(Error)
   ListTypeError         = Class.new(Error)
+  LoadError             = Class.new(Error)
 
   class Scope
     attr_accessor :names
@@ -123,32 +124,23 @@ class Interpreter
 
   def load
     @history.pop # don't record the "load" statement
-    # File.open("save.txt", "r").each_line do |line|
-    #   next if line.chars.first =~ /[\W\#]/
-
-    #   tree = parse(line)
-    #   puts tree
-    #   evaluate(tree)
-    # end
-
-    #read file line by line and stick in an array
-    # Remove comments
-    # append to previous if line starts with whitespace lines
 
     lines_array = File.readlines("save.txt")
-    lines_array.delete_if do |line|
-      line.chars.first =~ /\#|\n/
+
+    lines_array.delete_if { |line| line.chars.first =~ /\#|\n/ } # remove comments and blank lines
+    lines_array.map!(&:rstrip) # remove return characters
+    raise LoadError, 'bad first line' if lines_array.first.chars.first =~ /\s/
+
+    code = lines_array.each_with_object([]) do |line, array|
+      line.chars.first =~ /\s/ ? array.last << line : array.push(line)
     end
-    lines_array.reverse.each_with_index do |line, index|
-      # if line starts with a space character
-      if line.chars.first =~ /\s/
-        binding.pry
-        # Append to next line
-        lines_array.reverse[index + 1] << line
-        lines_array.delete_at(index)
-      end
+
+    code.each do |line|
+      tree = parse(line)
+      puts tree
+      evaluate(tree)
     end
-    binding.pry
+
     "loaded"
   end
 
@@ -261,6 +253,8 @@ class Interpreter
   end
 
   def compose(expression, function_names)
+    puts "e: #{expression} fn: #{function_names}"
+
     list = evaluate(expression)
     type_check!(list, Operation, OperationTypeError)
 
