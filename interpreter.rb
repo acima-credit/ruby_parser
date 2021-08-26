@@ -57,6 +57,7 @@ class Interpreter
     when :ternary then ternary(*tree.arguments)
     when :and then and_function(*tree.arguments)
     when :or then or_function(*tree.arguments)
+    when :condition_list then condition_list(*tree.arguments)
     
 
     else
@@ -64,6 +65,19 @@ class Interpreter
     end
   end
 
+  def condition_list(operation_lists) 
+    binding.pry
+
+  end
+
+  def and_function(value)
+    binding.pry
+    evaluate(value_1) && evaluate(value_2)
+  end
+
+  # def or_function(value_1, value_2)
+  #   evaluate(value_1) || evaluate(value_2)
+  # end
 
   def equals(value_1, value_2)
     evaluate(value_1) == evaluate(value_2)
@@ -93,13 +107,7 @@ class Interpreter
     evaluate(value_1.first) ? evaluate(value_2) : evaluate(value_3)
   end
 
-  def and_function(value_1, value_2)
-    evaluate(value_1) && evaluate(value_2)
-  end
-
-  def or_function(value_1, value_2)
-    evaluate(value_1) || evaluate(value_2)
-  end
+ 
 
   # TODO:  Fix the && and OR rules in the parser
 
