@@ -66,18 +66,16 @@ class Interpreter
   end
 
   def condition_list(operation_lists) 
-    binding.pry
-
+    evaluate(operation_lists) 
   end
 
-  def and_function(value)
-    binding.pry
-    evaluate(value_1) && evaluate(value_2)
+  def and_function(value_1, value_2)
+    evaluate(value_1) && evaluate(value_2) ? true : false
   end
 
-  # def or_function(value_1, value_2)
-  #   evaluate(value_1) || evaluate(value_2)
-  # end
+  def or_function(value_1, value_2)
+    evaluate(value_1) || evaluate(value_2) ? true : false
+  end
 
   def equals(value_1, value_2)
     evaluate(value_1) == evaluate(value_2)
