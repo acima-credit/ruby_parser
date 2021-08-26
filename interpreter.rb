@@ -1,5 +1,6 @@
 # TODO: fix anonymous math functions
 # TODO: Figure out how to do REAL multilines : Load it to a file, watch for beginning/ending.
+# TODO: call functions without arguments
 
 class Interpreter
   Error                 = Class.new(StandardError)
@@ -234,7 +235,7 @@ class Interpreter
           assign(param, values[index])
         end
       end
-
+      binding.pry
       function.body.map { |expression| evaluate(expression) }.last
     end
   end
@@ -324,6 +325,7 @@ class Interpreter
 
   def last(list)
     Operation.new(:list, Array(list.argument.last))
+    # Operation.new(:compose, Operation.new(:list, list), ['last'])
   end
 
   def max(list)
