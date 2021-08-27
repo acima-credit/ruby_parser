@@ -11,6 +11,17 @@ class Operation
   def to_s
     "(#{operation}: #{arguments.join(', ')})"
   end
+
+  def to_hash
+    # finish later
+    # {
+    #   operation => arguments.reduce({}) do |hash, argument|
+    #     argument.respond_to?(:to_hash) ? hash.merge(argument.to_hash) : hash.merge(operation => argument)
+    #   end
+    # }
+
+    # {:evaluate=>{:+=>{:number=>{:number=>1}}}}
+  end
 end
 
 class Parser < Rly::Yacc

@@ -35,3 +35,19 @@ class Lexer < Rly::Lex
     nil
   end
 end
+
+
+
+
+'statement : expression'
+
+def statement(token)
+  expression(token)
+end
+
+def expression(token)
+  case token
+  when expression "+" expression
+  when NUMBER
+  end
+end
