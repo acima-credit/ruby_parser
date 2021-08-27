@@ -58,7 +58,6 @@ class Interpreter
     when :and then and_function(*tree.arguments)
     when :or then or_function(*tree.arguments)
     when :condition_list then condition_list(*tree.arguments)
-    
 
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
@@ -102,7 +101,7 @@ class Interpreter
   end
 
   def ternary(value_1, value_2, value_3)
-    evaluate(value_1.first) ? evaluate(value_2) : evaluate(value_3)
+    evaluate(value_1) ? evaluate(value_2) : evaluate(value_3)
   end
 
  

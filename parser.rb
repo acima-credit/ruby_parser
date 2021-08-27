@@ -92,35 +92,33 @@ class Parser < Rly::Yacc
 
   # if <conditional statement> then <>  else end
 
-  rule 'expression : expression EQ expression' do |expression, expression_a, _equals, expression_b|
+  rule 'condition : expression EQ expression' do |expression, expression_a, _equals, expression_b|
     expression.value = Operation.new(:==, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression NOT_EQ expression' do |expression, expression_a, _not_equals, expression_b|
+  rule 'condition : expression NOT_EQ expression' do |expression, expression_a, _not_equals, expression_b|
     expression.value = Operation.new(:!=, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression GT expression' do |expression, expression_a, _greater_than, expression_b|
+  rule 'condition : expression GT expression' do |expression, expression_a, _greater_than, expression_b|
     expression.value = Operation.new(:>, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression LT expression' do |expression, expression_a, _lower_than, expression_b|
+  rule 'condition : expression LT expression' do |expression, expression_a, _lower_than, expression_b|
     expression.value = Operation.new(:<, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression GET expression' do |expression, expression_a, _greater_equal_than, expression_b|
+  rule 'condition : expression GET expression' do |expression, expression_a, _greater_equal_than, expression_b|
     expression.value = Operation.new(:>=, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression LET expression' do |expression, expression_a, _lower_equal_than, expression_b|
+  rule 'condition : expression LET expression' do |expression, expression_a, _lower_equal_than, expression_b|
     expression.value = Operation.new(:<=, expression_a.value, expression_b.value)
   end
 
-  rule 'expression : expression TERNARY_QUESTION expression TERNARY_COLON expression' do |expression, expression_a, _question, expression_b, _colon, expression_c|
-    expression.value = Operation.new(:ternary, expression_a.value, expression_b.value, expression_c.value)
-  end
-
-  rule 'condition_list : expression | expression AND condition_list | expression OR condition_list' do |condition_list, condition, condition_operator, list|
+  # condition_list interfers with the ternary rule. FIX IT
+  rule 'condition_list : condition | condition AND condition_list | condition OR condition_list' do |condition_list, condition, condition_operator, list|
+    binding.pry
     if(list.nil?)
       condition_list.value = condition.value
     else
@@ -130,6 +128,11 @@ class Parser < Rly::Yacc
         condition_list.value = Operation.new(:or, condition.value, list.value)
       end
     end
+  end
+
+  rule 'expression : condition_list TERNARY_QUESTION expression TERNARY_COLON expression' do |expression, expression_a, _question, expression_b, _colon, expression_c|
+    binding.pry
+    expression.value = Operation.new(:ternary, expression_a.value, expression_b.value, expression_c.value)
   end
 
   # rule 'condition_list : condition | condition OR condition_list' do |condition_list, condition, _or, list|
