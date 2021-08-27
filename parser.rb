@@ -210,7 +210,7 @@ class Parser < Rly::Yacc
 
   rule 'expression : expression compose_list'\
   do |expression, list_expression, composers|
-    expression.value = Operation.new(:compose, list_expression.value, composers.value)
+    expression.value = Operation.new(:compose, list_expression.value, composers.value, 0)
   end
 
   # This is currently broken

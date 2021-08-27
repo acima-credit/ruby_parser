@@ -12,4 +12,7 @@ multiline: λ\z\
   y: x * 2 .
   x + y
 
-apple: λ... {1} ∘ apple
+apple: λ\x\ { x } ∘ apple
+
+{ 1 } ∘ adder ∘ multiplier ∘ cast
+

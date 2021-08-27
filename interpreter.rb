@@ -235,7 +235,7 @@ class Interpreter
           assign(param, values[index])
         end
       end
-      binding.pry
+      # binding.pry
       function.body.map { |expression| evaluate(expression) }.last
     end
   end
@@ -253,15 +253,16 @@ class Interpreter
     Operation.new(:list, array)
   end
 
-  def compose(expression, function_names)
+  def compose(expression, function_names, index)
     puts "e: #{expression} fn: #{function_names}"
 
     list = evaluate(expression)
     type_check!(list, Operation, OperationTypeError)
 
     return list if function_names.empty?
-
-    func = function_names.shift
+    # binding.pry
+    func = function_names[index]
+    index += 1
 
     expression =
       case func
@@ -277,7 +278,7 @@ class Interpreter
       else compose_function(list, func)
       end
 
-    compose(expression, function_names)
+    compose(expression, function_names, index)
   end
 
   def compose_function(list, name)
