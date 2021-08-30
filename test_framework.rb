@@ -3,6 +3,8 @@
 # A base class to use in your code to test things
 class TestFramework
   class << self
+    # Does not work yet!
+    # Needs a scope stack
     def describe(name, &block)
       @tests ||= {}
       @tests[name] = block
