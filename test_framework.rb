@@ -5,6 +5,7 @@ class TestFramework
   class << self
     # Does not work yet!
     # Needs a scope stack
+
     def describe(name, &block)
       @tests ||= {}
       @tests[name] = block
