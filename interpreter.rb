@@ -41,6 +41,7 @@ class Interpreter
     when :number then number(*tree.arguments)
     when :lookup then lookup(*tree.arguments)
     when :declare then declare(*tree.arguments)
+    when :declare_with_params then declare_with_params(*tree.arguments)
     when :ring then ring(*tree.arguments)
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
@@ -110,6 +111,12 @@ class Interpreter
   def declare(name, body)
     log "#declare function #{name} to definition #{body}"
     current_scope.functions[name] = body # not evaluating, params need to be assigned after func defniition.
+  end
+
+  def declare_with_params(name, params, body)
+    log "#declare function #{name} with #{params} to definition #{body}"
+    current_scope.functions[name] = body # not evaluating, params need to be assigned after func defniition.
+    
   end
 
   def ring(name)

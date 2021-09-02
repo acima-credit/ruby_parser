@@ -60,15 +60,18 @@ class Parser < Rly::Yacc
     params.value = Array(name) + Array(params_2)
   end
 
-  # Function definition x ~ 4 + 6  ignoring _tool parameters
-  # Function definition with parameters: x with b, c ~ b + c
-  rule 'expression : NAME SCREW expression
-                   | NAME WITH params SCREW expression' do |expression, name, _tool_1, params, _tool_2, expression_1|
-    log "expression : NAME SCREW expression --> (:declare, #{name.inspect}, #{expression_1.inspect})"
+  # Function definition x ~ 4 + 6  ignoring _tool parameters -- NO PARAMS IN DEFINITION
+  rule 'expression : NAME SCREW expression' do |expression, name, _tool_1, expression_1|
+    log "expression : NAME SCREW expression --> (:declare, #{name.value}, #{expression_1.value})"
     expression.value = Operation.new(:declare, name.value, expression_1.value)
   end
 
+  # Function definition with parameters: x with b, c ~ b + c
+  rule 'expression : NAME WITH params SCREW expression' do |expression, name, _tool_1, params, _tool_2, expression_1|
+    log "expression : NAME WITH params SCREW expression --> (:declare_with_params, #{name.value}, #{params.value}, #{expression_1.value})"
 
+    expression.value = Operation.new(:declare_with_params, name.value, params.value, expression_1.value)
+  end
 
   # # Function call example: ring multiply with 3 and 5 (function lookup) ignoring _tool parameters
   # rule 'expression : RING NAME
