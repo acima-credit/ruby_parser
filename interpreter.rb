@@ -260,8 +260,11 @@ class Interpreter
     type_check!(list, Operation, OperationTypeError)
 
     return list if function_names.empty?
-    # binding.pry
+    # return list if function_names[index] == "break"
     func = function_names[index]
+    # if func == "halt" && break.condition
+    #   return list
+    # end
     index += 1
 
     expression =
@@ -285,6 +288,8 @@ class Interpreter
     return compose_branch(list, name) if name.is_a?(Operation) && name.branch?
 
     function = current_scope.names[name]
+    # How is name nil?
+    binding.pry unless function.is_a?(Function)
     type_check!(function, Function, FunctionTypeError)
 
     result = list.map { |value| Operation.new(:number, evaluate_function(function, Array(value))) }

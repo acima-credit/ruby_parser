@@ -1,6 +1,6 @@
 even: λ\w\ w % 2 <> 0
 
-echo: λ\x\ x
+echo: λ\x\ x: 1 . x
 
 adder: λ\y\ y + 1
 

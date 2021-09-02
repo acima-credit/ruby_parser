@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'colorize'
+
 # A base class to use in your code to test things
 class TestFramework
   class << self
@@ -24,20 +26,21 @@ class TestFramework
     # assert(1 == 1)
     def assert(value)
       if value
-        log("\tIt worked")
+        log("*".green)
       else
-        log("\tIt didn't work")
+        log("F".red)
       end
     end
 
     def log(message)
-      puts(message)
+      print(message)
     end
 
     def run
       @tests.to_a.shuffle.each do |name, expectation|
-        log(name)
-        log("\t#{expectation.call}")
+        print("#{name}: ")
+        log(" #{expectation.call}")
+        puts
       end
     end
   end

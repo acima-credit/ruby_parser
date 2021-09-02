@@ -12,6 +12,7 @@ class Lexer < Rly::Lex
   token :CLEAR, /clear/
   token :SAVE, /save/
   token :LOAD, /load/
+  token :HALT, /halt/
   token :GTE, /><>/
   token :LTE, /<></
   token :EQ, /<>/

@@ -4,6 +4,7 @@ require "./lexer"
 class TestLexer < TestFramework
   it "should load" do
     lexer = Lexer.new
+    assert(lexer)
   end
 
   it "should parse numbers" do
