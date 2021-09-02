@@ -7,7 +7,7 @@ class Lexer < Rly::Lex
   ignore " \t\n\r"
 
   def self.log(msg)
-    $stdout.puts "Lexer: #{msg}".black.on_green
+    $stdout.puts "Lexer: #{msg}"
     $stdout.flush
   end
 

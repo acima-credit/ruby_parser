@@ -16,7 +16,7 @@ end
 class Parser < Rly::Yacc
 
   def self.log(msg)
-    $stdout.puts "Parser: #{msg}".black.on_light_blue
+    $stdout.puts "Parser: #{msg}".white.on_blue
     $stdout.flush
   end
 
