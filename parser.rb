@@ -46,18 +46,20 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:assign, name.value, expression_1.value)
   end
 
-# # copycat:
-# rule 'arg_list : NAME
-#                 | NAME "," arg_list' do |arg_list, name, _, agr_list|
-#   puts "Parser#arg_list: #{name.inspect} + #{agr_list.inspect}" if verbose
-#   arg_list.value = Array(name) + Array(agr_list)
-# end
+  # -- BEGIN FUNCTION DEFINITION SECTION
 
-  # params (must be defined before the actual function definition)
-  rule 'params : NAME
-               | NAME RIVET params' do |params, name, _tool, params_2|
-    log "params : NAME | NAME RIVET params --> (:params, #{name.inspect}, #{params_2.inspect})"
-    params.value = Array(name) + Array(params_2)
+  # params (one value) - consider refactoring this with multiple values (below)
+  rule 'params : NAME' do |params, name|
+    log "params : NAME --> (:params, #{name.value})"
+    params.value = name.value
+    puts "This is params.value: #{params.value}"
+  end
+
+  # params (multiple values) - consider refactoring this with single values (above)
+  rule 'params : NAME RIVET params' do |params, name, _tool, params_2|
+    log "params : NAME RIVET params --> (:params, #{name.inspect}, #{params_2.inspect})"
+    params.value = Array(name.value) + Array(params_2.value)
+    puts "This is params.value: #{params.value}"
   end
 
   # Function definition x ~ 4 + 6  ignoring _tool parameters -- NO PARAMS IN DEFINITION
@@ -69,9 +71,10 @@ class Parser < Rly::Yacc
   # Function definition with parameters: x with b, c ~ b + c
   rule 'expression : NAME WITH params SCREW expression' do |expression, name, _tool_1, params, _tool_2, expression_1|
     log "expression : NAME WITH params SCREW expression --> (:declare_with_params, #{name.value}, #{params.value}, #{expression_1.value})"
-
     expression.value = Operation.new(:declare_with_params, name.value, params.value, expression_1.value)
   end
+
+  # -- BEGIN FUNCTION CALL SECTION
 
   # # Function call example: ring multiply with 3 and 5 (function lookup) ignoring _tool parameters
   # rule 'expression : RING NAME

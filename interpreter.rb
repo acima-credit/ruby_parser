@@ -109,15 +109,19 @@ class Interpreter
   end
 
   def declare(name, body)
-    log "#declare function #{name} to definition #{body}"
-    current_scope.functions[name] = body # not evaluating, params need to be assigned after func defniition.
+    log "#declare function #{name} to the following definition: #{body}"
+    current_scope.functions[name] = body # not evaluating until function call ('ring')
+    puts "This is current_scope.functions[name] #{current_scope.functions[name]}"
   end
 
   def declare_with_params(name, params, body)
-    log "#declare function #{name} with #{params} to definition #{body}"
-    current_scope.functions[name] = body # not evaluating, params need to be assigned after func defniition.
-    
-  end
+    log "#declare function name #{name} with params #{params} and definition (body) #{body}"
+    current_scope.functions[name] = { body => params }  # not evaluating until function call ('ring')
+    puts "This is name:  #{name}"
+    puts "This is params:  #{params}"
+    puts "This is body:  #{body}"
+    puts "This is current_scope.functions[name] #{current_scope.functions[name]}"
+  end # x with b,c,d,e ~ b + c + 5
 
   def ring(name)
     log "#ring function #{name}"
