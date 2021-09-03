@@ -259,7 +259,7 @@ class Interpreter
     list = evaluate(expression)
     type_check!(list, Operation, OperationTypeError)
 
-    return list if function_names.empty?
+    return list if function_names[index].nil?
     # return list if function_names[index] == "break"
     func = function_names[index]
     # if func == "halt" && break.condition
