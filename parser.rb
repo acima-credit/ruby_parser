@@ -76,18 +76,31 @@ class Parser < Rly::Yacc
 
   # -- BEGIN FUNCTION CALL SECTION
 
-  # # Function call example: ring multiply with 3 and 5 (function lookup) ignoring _tool parameters
-  # rule 'expression : RING NAME
-  #                  | RING NAME WITH values' do |expression, _tool, name|
-  #   log "expression : RING NAME --> (:ring, #{name.value})"
-  #   expression.value = Operation.new(:ring, name.value)
-  # end
+  # args (one value) - consider refactoring this with multiple values (below)
+  rule 'args : NAME' do |args, name|
+    log "args : NAME --> (:args, #{name.value})"
+    args.value = name.value
+    puts "This is args.value: #{args.value}"
+  end
 
-  # # arguments can be like: 3
-  # #                    or: 3 and 4
-  # #                    or: 3 and 4 and 19
-  # rule 'values : expression
-  #              | expression AND values'
+  # args (multiple values) - consider refactoring this with single values (above)
+  rule 'args : NAME RIVET args' do |args, name, _tool, args_2|
+    log "args : NAME RIVET args --> (:args, #{name.inspect}, #{args_2.inspect})"
+    args.value = Array(name.value) + Array(args_2.value)
+    puts "This is args.value: #{args.value}"
+  end
+
+  # Function call example: ring multiply with 3 and 5 (function lookup) ignoring _tool parameters
+  rule 'expression : RING NAME' do |expression, _tool, name|
+    log "expression : RING NAME --> (:ring, #{name.value})"
+    expression.value = Operation.new(:ring, name.value)
+  end
+
+  # Function call example: ring multiply with 3 and 5 (function lookup) ignoring _tool parameters
+  rule 'expression : RING NAME WITH args' do |expression, _tool, name, _tool_2, args|
+    log "expression : RING NAME WITH args --> (:ring_with_args, #{name.value})"
+    expression.value = Operation.new(:ring_with_args, name.value, args.value)
+  end
 
   # Parenthesis - ignoring _tool parameters
   rule 'expression : LEFT_HOOK expression RIGHT_HOOK' do |expression, _tool1, expression_1, _tool2|

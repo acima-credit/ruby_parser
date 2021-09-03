@@ -17,6 +17,10 @@ class Interpreter
     @stack.last
   end
 
+  def pop_scope
+    @stack.pop
+  end
+
   def self.log(msg)
     $stdout.puts "Interpreter: #{msg}".black.on_light_magenta
     $stdout.flush
@@ -43,6 +47,7 @@ class Interpreter
     when :declare then declare(*tree.arguments)
     when :declare_with_params then declare_with_params(*tree.arguments)
     when :ring then ring(*tree.arguments)
+    when :ring_with_args then ring_with_args(*tree.arguments)
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
@@ -115,16 +120,28 @@ class Interpreter
   end
 
   def declare_with_params(name, params, body)
-    log "#declare function name #{name} with params #{params} and definition (body) #{body}"
-    current_scope.functions[name] = { body => params }  # not evaluating until function call ('ring')
-    puts "This is name:  #{name}"
-    puts "This is params:  #{params}"
-    puts "This is body:  #{body}"
-    puts "This is current_scope.functions[name] #{current_scope.functions[name]}"
+    log "\n\n#declare function name #{name} with params #{params} and definition (body) #{body}"
+    current_scope.functions[name] = { params: params, body: body }  # not evaluating until function call ('ring')
+    log "This is name:  #{name}"
+    log "This is params:  #{params}"
+    log "This is body:  #{body}"
+    log "This is current_scope.functions[name] #{current_scope.functions[name]}\n\n"
   end # x with b,c,d,e ~ b + c + 5
 
   def ring(name)
     log "#ring function #{name}"
+    binding.pry
+    if current_scope.functions.has_key? name
+      #if current_scope.functions[name]  ||| current_scope.functions[name].arguments.map(&:operation)
+      evaluate(current_scope.functions[name])
+    else
+      puts "Cannot lookup undefined function '#{name}'"
+      raise "Lookup error"
+    end
+  end
+
+  def ring_with_args(name, args)
+    log "#ring function #{name} with args #{args}"
     if current_scope.functions.has_key? name
       evaluate(current_scope.functions[name])
     else
