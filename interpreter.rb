@@ -74,6 +74,7 @@ class Interpreter
     when :function then function(*tree.arguments)
     when :list then list(*tree.arguments)
     when :compose then compose(*tree.arguments)
+    when :provided then provided(*tree.arguments)
 
     when :+ then self.+(*tree.arguments)
     when :- then self.-(*tree.arguments)
@@ -253,6 +254,10 @@ class Interpreter
     Operation.new(:list, array)
   end
 
+  def provided(expression)
+
+  end
+
   def compose(expression, function_names, index)
     puts "e: #{expression} fn: #{function_names}"
 
@@ -285,10 +290,11 @@ class Interpreter
   end
 
   def compose_function(list, name)
+    binding.pry
     return compose_branch(list, name) if name.is_a?(Operation) && name.branch?
 
     function = current_scope.names[name]
-    # How is name nil?
+
     binding.pry unless function.is_a?(Function)
     type_check!(function, Function, FunctionTypeError)
 

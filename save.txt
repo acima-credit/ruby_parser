@@ -2,7 +2,8 @@ even: λ\w\ w % 2 <> 0
 
 echo: λ\x\ x: 1 . x
 
-adder: λ\y\ y + 1
+adder: λ\y\
+  y <= 10 ⌥ { y + 1 } ∘ adder | { y } ∘ cast
 
 multiplier: λ\z\ z * 2
 
@@ -14,5 +15,5 @@ multiline: λ\z\
 
 apple: λ\x\ { x } ∘ apple
 
-{ 1 } ∘ adder ∘ multiplier ∘ cast
+{ 1 } ∘ adder ∘ multiplier ∘ case
 

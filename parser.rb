@@ -71,10 +71,15 @@ class Parser < Rly::Yacc
     statement.value = Operation.new(:assign, name.value, expression.value)
   end
 
-  rule 'statement : HALT expression'\
-  do |statement,_halt, expression|
-    statement.value = Operation.new(:halt, expression.value)
-  end
+  # rule 'statement : HALT expression'\
+  # do |statement,_halt, expression|
+  #   statement.value = Operation.new(:halt, expression.value)
+  # end
+
+  # rule 'statement : PROVIED expression'\
+  # do |statement,_provided, exp|
+  #   statement.value = Operation.new(:provided, exp.value)
+  # end
 
   rule 'statement : expression'\
   do |statement, expression|
@@ -198,7 +203,7 @@ class Parser < Rly::Yacc
   end
 
   # ∘ func ⌥ func | func ∘
-  rule 'branch_compose : NAME BRANCH NAME "|" NAME'\
+  rule 'branch_compose : expression BRANCH expression "|" expression'\
   do |compose, check, _branch, truthy, _pipe, falsey|
     compose.value = Operation.new(:branch, check.value, truthy.value, falsey.value)
   end
