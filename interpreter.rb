@@ -68,8 +68,7 @@ class Interpreter
     if current_scope.values.has_key? value
       current_scope.values[value]
     else
-      puts "Cannot lookup undefined variable '#{value}'"
-      raise "Lookup error"
+      return "Cannot lookup undefined variable '#{value}'"
     end
   end
 
@@ -114,14 +113,18 @@ class Interpreter
   end
 
   def declare(name, body)
+    if body.to_s.scan("@operation=:lookup") # ugly, but it works. how can we do this better?
+      log "Undefined arguments in function body: #{body}"
+      return
+    end
     log "#declare function #{name} to the following definition: #{body}"
     current_scope.functions[name] = body # not evaluating until function call ('ring')
-    puts "This is current_scope.functions[name] #{current_scope.functions[name]}"
+    log "This is current_scope.functions[name] #{current_scope.functions[name]}"
   end
 
-  def declare_with_params(name, params, body)
-    log "\n\n#declare function name #{name} with params #{params} and definition (body) #{body}"
-    current_scope.functions[name] = { params: params, body: body }  # not evaluating until function call ('ring')
+  def declare_with_params(name, params, body) # need to handle "rogue" undefined params in the body
+    log "\n\n#declare function name #{name} with params #{params} and function body #{body}"
+    current_scope.functions[name] = { params: params, body: body } # not evaluating until function call ('ring')
     log "This is name:  #{name}"
     log "This is params:  #{params}"
     log "This is body:  #{body}"
@@ -130,13 +133,10 @@ class Interpreter
 
   def ring(name)
     log "#ring function #{name}"
-    binding.pry
     if current_scope.functions.has_key? name
-      #if current_scope.functions[name]  ||| current_scope.functions[name].arguments.map(&:operation)
       evaluate(current_scope.functions[name])
     else
-      puts "Cannot lookup undefined function '#{name}'"
-      raise "Lookup error"
+      return "Cannot lookup undefined function '#{name}'"
     end
   end
 
