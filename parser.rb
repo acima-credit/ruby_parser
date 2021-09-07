@@ -30,9 +30,9 @@ class Parser < Rly::Yacc
     statement.value = Operation.new(:evaluate, expression.value)
   end
 
-  rule 'expression : condition_list' do |statement, expression|
-    statement.value = Operation.new(:condition_list, expression.value)
-  end
+  # rule 'expression : condition_list' do |statement, expression|
+  #   statement.value = Operation.new(:condition_list, expression.value)
+  # end
 
   rule 'expression : "(" expression ")"' do |expression, _left, expression_a, _right|
     expression.value = expression_a.value
@@ -97,57 +97,85 @@ class Parser < Rly::Yacc
 
 
   # conditionals
+  # https://www.lysator.liu.se/c/ANSI-C-grammar-y.html
 
   # if <conditional statement> then <>  else end
 
-  rule 'condition : expression EQ expression' do |expression, expression_a, _equals, expression_b|
+  rule 'equality_expression : relational_condition' do |equality_expression, relational_condition|
+    equality_expression.value = Operation.new(:evaluate, relational_condition.value)
+  end
+
+  rule 'equality_expression : equality_expression EQ relational_condition' do |expression, expression_a, _equals, expression_b|
     expression.value = Operation.new(:==, expression_a.value, expression_b.value)
   end
 
-  rule 'condition : expression NOT_EQ expression' do |expression, expression_a, _not_equals, expression_b|
+  rule 'equality_expression : equality_expression NOT_EQ relational_condition' do |expression, expression_a, _not_equals, expression_b|
     expression.value = Operation.new(:!=, expression_a.value, expression_b.value)
   end
 
-  rule 'condition : expression GT expression' do |expression, expression_a, _greater_than, expression_b|
+  rule 'relational_condition : expression GT expression' do |expression, expression_a, _greater_than, expression_b|
     expression.value = Operation.new(:>, expression_a.value, expression_b.value)
   end
 
-  rule 'condition : expression LT expression' do |expression, expression_a, _lower_than, expression_b|
+  rule 'relational_condition : expression LT expression' do |expression, expression_a, _lower_than, expression_b|
     expression.value = Operation.new(:<, expression_a.value, expression_b.value)
   end
 
-  rule 'condition : expression GET expression' do |expression, expression_a, _greater_equal_than, expression_b|
+  rule 'relational_condition : expression GET expression' do |expression, expression_a, _greater_equal_than, expression_b|
     expression.value = Operation.new(:>=, expression_a.value, expression_b.value)
   end
 
-  rule 'condition : expression LET expression' do |expression, expression_a, _lower_equal_than, expression_b|
+  rule 'relational_condition : expression LET expression' do |expression, expression_a, _lower_equal_than, expression_b|
     expression.value = Operation.new(:<=, expression_a.value, expression_b.value)
   end
   # 1 > 2 && 3 > 4 ? 5 : 6
   # condition_list interfers with the ternary rule. FIX IT
-  rule 'condition_list : condition AND condition_list | condition OR condition_list | condition ' do |condition_list, condition, condition_operator, list|
-    # binding.pry
-    if(list.nil?)
-      condition_list.value = condition.value
-    else
-      if condition_operator.value == '&&'
-        condition_list.value = Operation.new(:and, condition.value, list.value)
-      else
-        condition_list.value = Operation.new(:or, condition.value, list.value)
-      end
-    end
+
+  rule 'and_expression : equality_expression' do |and_expression, equality_expression|
+    and_expression.value = Operation.new(:evaluate, equality_expression.value)
   end
+
+  rule 'and_expression : and_expression AND equality_expression' do |and_expression, and_expression_2, _and, equality_expression|
+    and_expression.value = Operation.new(:and, and_expression_2.value, equality_expression.value)
+  end
+
+  rule 'or_expression : and_expression' do |or_expression, and_expression|
+    or_expression.value = Operation.new(:evaluate, and_expression.value)
+  end
+
+  rule 'or_expression : or_expression OR and_expression' do |or_expression, or_expression_2, _or, and_expression|
+    or_expression.value = Operation.new(:or, or_expression_2.value, and_expression.value)
+  end
+
+  # rule 'condition_list : condition AND condition_list | condition OR condition_list | condition ' do |condition_list, condition, condition_operator, list|
+  #   # binding.pry
+  #   if(list.nil?)
+  #     condition_list.value = condition.value
+  #   else
+  #     if condition_operator.value == '&&'
+  #       condition_list.value = Operation.new(:and, condition.value, list.value)
+  #     else
+  #       condition_list.value = Operation.new(:or, condition.value, list.value)
+  #     end
+  #   end
+  # end
 
   # rule 'condition_list : condition AND condition_list | condition ' do |condition_list, condition, _condition_operator, list|
   #   # binding.pry
   #   condition_list.value = Operation.new(:and, condition.value, list.value)
   # end
 
-  rule 'expression : condition_list TERNARY_QUESTION expression TERNARY_COLON expression' do |expression, expression_a, _question, expression_b, _colon, expression_c|
-    # binding.pry
-    expression.value = Operation.new(:ternary, expression_a.value, expression_b.value, expression_c.value)
+  rule 'ternary : or_expression' do |ternary, or_expression|
+    ternary.value = Operation.new(:evaluate, or_expression.value)
   end
 
+  rule 'ternary : or_expression "?" expression ":" ternary' do |ternary, or_expression, _question, expression, _colon, ternary_2|
+    ternary.value = Operation.new(:ternary, or_expression.value, expression.value, ternary_2.value)
+  end
+
+  rule 'expression : ternary' do |expression, ternary|
+    expression.value = Operation.new(:evaluate, ternary.value)
+  end
   # rule 'condition_list : condition | condition OR condition_list' do |condition_list, condition, _or, list|
   #   if(list.nil?)
   #     condition_list.value = condition.value
