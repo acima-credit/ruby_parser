@@ -14,10 +14,14 @@ class Operation
 end
 
 class Parser < Rly::Yacc
+  precedence :left, '?'
+  precedence :left, ':'
+  precedence :left, '&&', '||'
+  precedence :left, '<', '>', '<=', '>=', '==', '!='
   precedence :left, '+', '-'
   precedence :left, '*', '/'
   precedence :left, '%', '^'
-
+  
   rule 'statement : NAME "=" expression' do |statement, name, equals, expression|
     statement.value = Operation.new(:assign, name.value, expression.value)
   end
@@ -26,8 +30,12 @@ class Parser < Rly::Yacc
     statement.value = Operation.new(:evaluate, expression.value)
   end
 
-  rule 'statement : condition_list' do |statement, expression|
+  rule 'expression : condition_list' do |statement, expression|
     statement.value = Operation.new(:condition_list, expression.value)
+  end
+
+  rule 'expression : "(" expression ")"' do |expression, _left, expression_a, _right|
+    expression.value = expression_a.value
   end
 
   rule 'expression : FUNCTION "(" ")" FUNCTION_ARROW expression'  do |expression, _function, _left_parentesis, _right_parentesis, _equal, body_function|
@@ -115,10 +123,10 @@ class Parser < Rly::Yacc
   rule 'condition : expression LET expression' do |expression, expression_a, _lower_equal_than, expression_b|
     expression.value = Operation.new(:<=, expression_a.value, expression_b.value)
   end
-
+  # 1 > 2 && 3 > 4 ? 5 : 6
   # condition_list interfers with the ternary rule. FIX IT
-  rule 'condition_list : condition | condition AND condition_list | condition OR condition_list' do |condition_list, condition, condition_operator, list|
-    binding.pry
+  rule 'condition_list : condition AND condition_list | condition OR condition_list | condition ' do |condition_list, condition, condition_operator, list|
+    # binding.pry
     if(list.nil?)
       condition_list.value = condition.value
     else
@@ -130,8 +138,13 @@ class Parser < Rly::Yacc
     end
   end
 
+  # rule 'condition_list : condition AND condition_list | condition ' do |condition_list, condition, _condition_operator, list|
+  #   # binding.pry
+  #   condition_list.value = Operation.new(:and, condition.value, list.value)
+  # end
+
   rule 'expression : condition_list TERNARY_QUESTION expression TERNARY_COLON expression' do |expression, expression_a, _question, expression_b, _colon, expression_c|
-    binding.pry
+    # binding.pry
     expression.value = Operation.new(:ternary, expression_a.value, expression_b.value, expression_c.value)
   end
 
