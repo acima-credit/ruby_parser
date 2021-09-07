@@ -72,6 +72,10 @@ class Interpreter
     number.to_f
   end
 
+  def arithmetic_type_check(x, y)
+    x.operation == :number && y.operation == :number
+  end
+
   def lookup(value)
     log "#lookup #{value}"
     if current_scope.values.has_key?(value)
@@ -83,42 +87,72 @@ class Interpreter
 
   def add(a, b)
     log "#add #{a}, #{b}"
-    if evaluate(a).class == Float && evaluate(b).class == Float
+    if arithmetic_type_check(a, b)
       evaluate(a) + evaluate(b)
     else
-      log "TypeError for Addition - class not supported"                  # add this to arithmetic operations or find something else
+      log "TypeError: One or more parameters is not a number"
       #raise TypeError
     end
   end
 
   def subtract(a, b)
     log "#subtract #{a}, #{b}"
-    evaluate(a) - evaluate(b)
+    if arithmetic_type_check(a, b)
+      evaluate(a) - evaluate(b)
+    else
+      log "TypeError: One or more parameters is not a number"
+      #raise TypeError
+    end
   end
 
   def multiply(a, b)
     log "#multiply #{a}, #{b}"
-    evaluate(a) * evaluate(b)
+    if arithmetic_type_check(a, b)
+      evaluate(a) * evaluate(b)
+    else
+      log "TypeError: One or more parameters is not a number"
+      #raise TypeError
+    end
   end
 
   def divide(a, b)
     log "#divide #{a}, #{b}"
-    evaluate(a) / evaluate(b)
+    if arithmetic_type_check(a, b)
+      evaluate(a) / evaluate(b)
+    else
+      log "TypeError: One or more parameters is not a number"
+      #raise TypeError
+    end
   end
 
   def modulo(a, b)
     log "#modulo #{a}, #{b}"
-    evaluate(a) % evaluate(b)
+    if arithmetic_type_check(a, b)
+      evaluate(a) % evaluate(b)
+    else
+      log "TypeError: One or more parameters is not a number"
+      #raise TypeError
+    end
   end
 
   def power(a, b)
     log "#power #{a}, #{b}"
-    evaluate(a) ** evaluate(b)
+    if arithmetic_type_check(a, b)
+      evaluate(a) ** evaluate(b)
+    else
+      log "TypeError: One or more parameters is not a number"
+      #raise TypeError
+    end
   end
 
   def negate(a)
     log "#negate #{a}"
-    evaluate(a) * -1
+    if arithmetic_type_check(a, 0)
+      evaluate(a) * -1
+    else
+      log "TypeError: One or more parameters is not a number"
+      #raise TypeError
+    end
   end
 
   def assign(var_name, var_value)
@@ -151,14 +185,14 @@ class Interpreter
 
     log "#ring function #{name}"
     if current_scope.functions.has_key? name
-      evaluate(current_scope.functions[name])
+      result = evaluate(current_scope.functions[name])
+      pop_scope
+      return result
     else
       log "Cannot lookup undefined function '#{name}'"
       pop_scope
       return
     end
-
-    pop_scope
   end
 
   def ring_with_args(name, args)
@@ -167,13 +201,13 @@ class Interpreter
 
     log "#ring function #{name} with args #{args}"
     if current_scope.functions.has_key? name
-      evaluate(current_scope.functions[name])
+      result = evaluate(current_scope.functions[name])
+      pop_scope
+      return result
     else
       puts "Cannot lookup undefined function '#{name}'"
       pop_scope
       raise "Lookup error"
     end
-
-    pop_scope
   end
 end
