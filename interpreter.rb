@@ -21,6 +21,15 @@ class Interpreter
     @stack.pop
   end
 
+  def push_scope(temporary_scope)
+    copied_current_scope = current_scope
+
+    temporary_scope.functions.merge! copied_current_scope.functions
+    temporary_scope.values.merge! copied_current_scope.values
+
+    @stack.push temporary_scope
+  end
+
   def self.log(msg)
     $stdout.puts "Interpreter: #{msg}".black.on_light_magenta
     $stdout.flush
@@ -65,7 +74,7 @@ class Interpreter
 
   def lookup(value)
     log "#lookup #{value}"
-    if current_scope.values.has_key? value
+    if current_scope.values.has_key?(value)
       current_scope.values[value]
     else
       return "Cannot lookup undefined variable '#{value}'"
@@ -74,7 +83,12 @@ class Interpreter
 
   def add(a, b)
     log "#add #{a}, #{b}"
-    evaluate(a) + evaluate(b)
+    if evaluate(a).class == Float && evaluate(b).class == Float
+      evaluate(a) + evaluate(b)
+    else
+      log "TypeError for Addition - class not supported"                  # add this to arithmetic operations or find something else
+      #raise TypeError
+    end
   end
 
   def subtract(a, b)
@@ -113,10 +127,10 @@ class Interpreter
   end
 
   def declare(name, body)
-    if body.to_s.scan("@operation=:lookup") # ugly, but it works. how can we do this better?
-      log "Undefined arguments in function body: #{body}"
-      return
-    end
+    # unless body.to_s.scan("@operation=:lookup").empty? # ugly, but it works. how can we do this better? This might break recursive calls or functions calling functions...
+    #   log "Undefined arguments in function body: #{body}"
+    #   return
+    # end
     log "#declare function #{name} to the following definition: #{body}"
     current_scope.functions[name] = body # not evaluating until function call ('ring')
     log "This is current_scope.functions[name] #{current_scope.functions[name]}"
@@ -132,21 +146,34 @@ class Interpreter
   end # x with b,c,d,e ~ b + c + 5
 
   def ring(name)
+    local_scope = Scope.new
+    push_scope(local_scope)
+
     log "#ring function #{name}"
     if current_scope.functions.has_key? name
       evaluate(current_scope.functions[name])
     else
-      return "Cannot lookup undefined function '#{name}'"
+      log "Cannot lookup undefined function '#{name}'"
+      pop_scope
+      return
     end
+
+    pop_scope
   end
 
   def ring_with_args(name, args)
+    local_scope = Scope.new
+    push_scope(local_scope)
+
     log "#ring function #{name} with args #{args}"
     if current_scope.functions.has_key? name
       evaluate(current_scope.functions[name])
     else
       puts "Cannot lookup undefined function '#{name}'"
+      pop_scope
       raise "Lookup error"
     end
+
+    pop_scope
   end
 end
