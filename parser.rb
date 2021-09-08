@@ -24,7 +24,7 @@ class Parser < Rly::Yacc
     self.class.log(msg)
   end
 
-  precedence :left, :AND, :OR
+  precedence :left, :COMPARE_AND, :COMPARE_OR
   precedence :left, :EQUIVALENT, :NON_EQUIVALENT, :LESS_THAN, :GREATER_THAN, :LESS_THAN_OR_EQUAL, :GREATER_THAN_OR_EQUAL
   precedence :left, :PHILLIPS, :FLATHEAD
   precedence :left, :TORX, :RAZOR, :PULLEY
@@ -183,13 +183,13 @@ class Parser < Rly::Yacc
     expression.value = Operation.new(:greater_than_or_equal, expression_1.value, expression_2.value)
   end
 
-  rule 'expression : expression AND expression' do |expression, expression_1, _tool, expression_2|
-    log "expression : expression AND expression --> (:compare_and, #{expression_1.value}, #{expression_2.value})"
+  rule 'expression : expression COMPARE_AND expression' do |expression, expression_1, _tool, expression_2|
+    log "expression : expression COMPARE_AND expression --> (:compare_and, #{expression_1.value}, #{expression_2.value})"
     expression.value = Operation.new(:compare_and, expression_1.value, expression_2.value)
   end
 
-  rule 'expression : expression OR expression' do |expression, expression_1, _tool, expression_2|
-    log "expression : expression OR expression --> (:compare_or, #{expression_1.value}, #{expression_2.value})"
+  rule 'expression : expression COMPARE_OR expression' do |expression, expression_1, _tool, expression_2|
+    log "expression : expression COMPARE_OR expression --> (:compare_or, #{expression_1.value}, #{expression_2.value})"
     expression.value = Operation.new(:compare_or, expression_1.value, expression_2.value)
   end
 
