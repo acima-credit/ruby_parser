@@ -207,6 +207,7 @@ class Interpreter
 
     log "#ring function #{name} with args #{args}"
     if current_scope.functions.has_key? name
+      binding.pry
       result = evaluate(current_scope.functions[name])
       pop_scope
       return result

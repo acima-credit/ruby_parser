@@ -79,15 +79,15 @@ class Parser < Rly::Yacc
   # -- BEGIN FUNCTION CALL SECTION
 
   # args (one value) - consider refactoring this with multiple values (below)
-  rule 'args : NAME' do |args, name|
-    log "args : NAME --> (:args, #{name.value})"
+  rule 'args : expression' do |args, name|
+    log "args : expression --> (:args, #{name.value})"
     args.value = name.value
     puts "This is args.value: #{args.value}"
   end
 
   # args (multiple values) - consider refactoring this with single values (above)
-  rule 'args : NAME RIVET args' do |args, name, _tool, args_2|
-    log "args : NAME RIVET args --> (:args, #{name.inspect}, #{args_2.inspect})"
+  rule 'args : expression RIVET args' do |args, name, _tool, args_2|
+    log "args : expression RIVET args --> (:args, #{name.inspect}, #{args_2.inspect})"
     args.value = Array(name.value) + Array(args_2.value)
     puts "This is args.value: #{args.value}"
   end
