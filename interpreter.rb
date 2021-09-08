@@ -176,11 +176,11 @@ class Interpreter
     log "This is current_scope.functions[name] #{current_scope.functions[name]}"
   end
 
-  def declare_with_params(name, params, body) # need to handle "rogue" undefined params in the body
-    log "\n\n#declare function name #{name} with params #{params} and function body #{body}"
-    current_scope.functions[name] = { params: params, body: body } # not evaluating until function call ('ring')
+  def declare_with_params(name, param_names, body) # need to handle "rogue" undefined params in the body
+    log "\n\n#declare function name #{name} with param_names #{param_names} and function body #{body}"
+    current_scope.functions[name] = { params: param_names, body: body } # not evaluating until function call ('ring')
     log "This is name:  #{name}"
-    log "This is params:  #{params}"
+    log "This is params:  #{param_names}"
     log "This is body:  #{body}"
     log "This is current_scope.functions[name] #{current_scope.functions[name]}\n\n"
   end # x with b,c,d,e ~ b + c + 5
@@ -208,7 +208,7 @@ class Interpreter
     log "#ring function #{name} with args #{args}"
     if current_scope.functions.has_key? name
       binding.pry
-      result = evaluate(current_scope.functions[name])
+      params = current_scope.functions[name]
       pop_scope
       return result
     else
@@ -251,3 +251,63 @@ class Interpreter
     evaluate(a) || evaluate(b) ? true : false
   end
 end
+
+
+# From: /Users/jason.loutensock/practice/ruby_parser/interpreter.rb:210 Interpreter#ring_with_args:
+
+#     204: def ring_with_args(name, args)
+#     205:   local_scope = Scope.new
+#     206:   push_scope(local_scope)
+#     207: 
+#     208:   log "#ring function #{name} with args #{args}"
+#     209:   if current_scope.functions.has_key? name
+#  => 210:     binding.pry
+#     211:     params = current_scope.functions[name]
+#     212:     pop_scope
+#     213:     return result
+#     214:   else
+#     215:     puts "Cannot lookup undefined function '#{name}'"
+#     216:     pop_scope
+#     217:     raise "Lookup error"
+#     218:   end
+#     219: end
+
+# [1] pry(#<Interpreter>)> current_scope.functions[name][:params]
+# => ["a"]
+# [2] pry(#<Interpreter>)> current_scope.functions[name][:body]
+# => #<Operation:0x00007fe75e88f598
+#  @arguments=[#<Operation:0x00007fe77f8b25b8 @arguments=["a"], @operation=:lookup>, #<Operation:0x00007fe77f8d25c0 @arguments=["8"], @operation=:number>],
+#  @operation=:add>
+# [3] pry(#<Interpreter>)> args
+# => [#<Operation:0x00007fe77f8e1ae8 @arguments=["2"], @operation=:number>]
+# [4] pry(#<Interpreter>)> args.size
+# => 1
+# [5] pry(#<Interpreter>)> current_scope.functions[name][:params].size
+# => 1
+# [6] pry(#<Interpreter>)> args.size.times do |index|
+# [6] pry(#<Interpreter>)*   "puts args[#{index}] is #{args[index]}"
+# [6] pry(#<Interpreter>)* end  
+# => 1
+# [7] pry(#<Interpreter>)> args.size.times do |index|
+# [7] pry(#<Interpreter>)*   "pus arg"s[#{index}] is #{args[index]}"  
+# SyntaxError: unexpected tIDENTIFIER, expecting end
+#   "pus arg"s[#{index}] is #{args[index]}"
+#            ^
+# [7] pry(#<Interpreter>)> args.size.times do |index|
+# [7] pry(#<Interpreter>)*   puts "args[#{index}] is #{args[index]}"
+# [7] pry(#<Interpreter>)* end  
+# args[0] is (number: 2)
+# => 1
+# [8] pry(#<Interpreter>)> 
+# [8] pry(#<Interpreter>)> ray1 = ["a", "b", "c"]
+# => ["a", "b", "c"]
+# [9] pry(#<Interpreter>)> ray2 = [1, 2, 3]
+# => [1, 2, 3]
+# [10] pry(#<Interpreter>)> ray1.zip(ray2)
+# => [["a", 1], ["b", 2], ["c", 3]]
+# [11] pry(#<Interpreter>)> ray1.zip(ray2) do |name, value|
+# [11] pry(#<Interpreter>)*   puts "Let's assign #{name} = #{value} in the current scope"
+# [11] pry(#<Interpreter>)* end  
+# Let's assign a = 1 in the current scope
+# Let's assign b = 2 in the current scope
+# Let's assign c = 3 in the current scope

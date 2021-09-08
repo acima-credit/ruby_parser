@@ -53,7 +53,7 @@ class Parser < Rly::Yacc
   # params (one value) - consider refactoring this with multiple values (below)
   rule 'params : NAME' do |params, name|
     log "params : NAME --> (:params, #{name.value})"
-    params.value = name.value
+    params.value = Array(name.value)
     puts "This is params.value: #{params.value}"
   end
 
@@ -81,7 +81,7 @@ class Parser < Rly::Yacc
   # args (one value) - consider refactoring this with multiple values (below)
   rule 'args : expression' do |args, name|
     log "args : expression --> (:args, #{name.value})"
-    args.value = name.value
+    args.value = Array(name.value)
     puts "This is args.value: #{args.value}"
   end
 
