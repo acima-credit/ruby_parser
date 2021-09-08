@@ -24,6 +24,8 @@ class Parser < Rly::Yacc
     self.class.log(msg)
   end
 
+  precedence :left, :AND, :OR
+  precedence :left, :EQUIVALENT, :NON_EQUIVALENT, :LESS_THAN, :GREATER_THAN, :LESS_THAN_OR_EQUAL, :GREATER_THAN_OR_EQUAL
   precedence :left, :PHILLIPS, :FLATHEAD
   precedence :left, :TORX, :RAZOR, :PULLEY
   precedence :left, :SQUARE
@@ -148,6 +150,47 @@ class Parser < Rly::Yacc
   rule 'expression : FLATHEAD expression %prec UMINUS' do |expression, _tool, expression_1|
     log "expression : FLATHEAD expression %prec UMINUS --> (:negate, #{expression_1.value})"
     expression.value = Operation.new(:negate, expression_1.value)
+  end
+
+  # -- BEGIN COMPARISON SECTION
+  rule 'expression : expression EQUIVALENT expression' do |expression, expression_1, _tool, expression_2|
+    log "expression : expression EQUIVALENT expression --> (:equivalent, #{expression_1.value}, #{expression_2.value})"
+    expression.value = Operation.new(:equivalent, expression_1.value, expression_2.value)
+  end
+
+  rule 'expression : expression NON_EQUIVALENT expression' do |expression, expression_1, _tool, expression_2|
+    log "expression : expression NON_EQUIVALENT expression --> (:non_equivalent, #{expression_1.value}, #{expression_2.value})"
+    expression.value = Operation.new(:non_equivalent, expression_1.value, expression_2.value)
+  end
+
+  rule 'expression : expression LESS_THAN expression' do |expression, expression_1, _tool, expression_2|
+    log "expression : expression LESS_THAN expression --> (:less_than, #{expression_1.value}, #{expression_2.value})"
+    expression.value = Operation.new(:less_than, expression_1.value, expression_2.value)
+  end
+
+  rule 'expression : expression GREATER_THAN expression' do |expression, expression_1, _tool, expression_2|
+    log "expression : expression GREATER_THAN expression --> (:greater_than, #{expression_1.value}, #{expression_2.value})"
+    expression.value = Operation.new(:greater_than, expression_1.value, expression_2.value)
+  end
+
+  rule 'expression : expression LESS_THAN_OR_EQUAL expression' do |expression, expression_1, _tool, expression_2|
+    log "expression : expression LESS_THAN_OR_EQUAL expression --> (:less_than_or_equal, #{expression_1.value}, #{expression_2.value})"
+    expression.value = Operation.new(:less_than_or_equal, expression_1.value, expression_2.value)
+  end
+
+  rule 'expression : expression GREATER_THAN_OR_EQUAL expression' do |expression, expression_1, _tool, expression_2|
+    log "expression : expression GREATER_THAN_OR_EQUAL expression --> (:greater_than_or_equal, #{expression_1.value}, #{expression_2.value})"
+    expression.value = Operation.new(:greater_than_or_equal, expression_1.value, expression_2.value)
+  end
+
+  rule 'expression : expression AND expression' do |expression, expression_1, _tool, expression_2|
+    log "expression : expression AND expression --> (:compare_and, #{expression_1.value}, #{expression_2.value})"
+    expression.value = Operation.new(:compare_and, expression_1.value, expression_2.value)
+  end
+
+  rule 'expression : expression OR expression' do |expression, expression_1, _tool, expression_2|
+    log "expression : expression OR expression --> (:compare_or, #{expression_1.value}, #{expression_2.value})"
+    expression.value = Operation.new(:compare_or, expression_1.value, expression_2.value)
   end
 
   rule 'expression : NUMBER' do |expression, number|

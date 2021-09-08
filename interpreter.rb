@@ -57,6 +57,16 @@ class Interpreter
     when :declare_with_params then declare_with_params(*tree.arguments)
     when :ring then ring(*tree.arguments)
     when :ring_with_args then ring_with_args(*tree.arguments)
+
+    when :equivalent then equivalent(*tree.arguments)
+    when :non_equivalent then non_equivalent(*tree.arguments)
+    when :less_than then less_than(*tree.arguments)
+    when :greater_than then greater_than(*tree.arguments)
+    when :less_than_or_equal then less_than_or_equal(*tree.arguments)
+    when :greater_than_or_equal then greater_than_or_equal(*tree.arguments)
+    when :compare_and then compare_and(*tree.arguments)
+    when :compare_or then compare_or(*tree.arguments)
+
     else
       puts "I don't know how to handle operation '#{tree.operation}'!"
     end
@@ -161,10 +171,6 @@ class Interpreter
   end
 
   def declare(name, body)
-    # unless body.to_s.scan("@operation=:lookup").empty? # ugly, but it works. how can we do this better? This might break recursive calls or functions calling functions...
-    #   log "Undefined arguments in function body: #{body}"
-    #   return
-    # end
     log "#declare function #{name} to the following definition: #{body}"
     current_scope.functions[name] = body # not evaluating until function call ('ring')
     log "This is current_scope.functions[name] #{current_scope.functions[name]}"
@@ -209,5 +215,38 @@ class Interpreter
       pop_scope
       raise "Lookup error"
     end
+  end
+
+  # comparison functions
+  def equivalent(a, b)
+    evaluate(a) == evaluate(b)
+  end
+
+  def non_equivalent(a, b)
+    evaluate(a) != evaluate(b)
+  end
+
+  def less_than(a, b)
+    evaluate(a) < evaluate(b)
+  end
+
+  def greater_than(a, b)
+    evaluate(a) > evaluate(b)
+  end
+
+  def less_than_or_equal(a, b)
+    evaluate(a) <= evaluate(b)
+  end
+
+  def greater_than_or_equal(a, b)
+    evaluate(a) >= evaluate(b)
+  end
+
+  def compare_and(a, b)
+    evaluate(a) && evaluate(b) ? true : false
+  end
+
+  def compare_or(a, b)
+    evaluate(a) || evaluate(b) ? true : false
   end
 end
