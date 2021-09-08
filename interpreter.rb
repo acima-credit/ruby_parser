@@ -74,6 +74,7 @@ class Interpreter
     when :function then function(*tree.arguments)
     when :list then list(*tree.arguments)
     when :compose then compose(*tree.arguments)
+    when :halt then halt(*tree.arguments)
     when :provided then provided(*tree.arguments)
 
     when :+ then self.+(*tree.arguments)
@@ -236,8 +237,12 @@ class Interpreter
           assign(param, values[index])
         end
       end
-      # binding.pry
-      function.body.map { |expression| evaluate(expression) }.last
+
+      function.body.map do |expression|
+        result = evaluate(expression)
+        break if result == :halt
+
+      end.last
     end
   end
 
@@ -252,6 +257,12 @@ class Interpreter
 
   def list(array)
     Operation.new(:list, array)
+  end
+
+  def halt(expression)
+    result = evaluate(expression)
+
+    result ? :halt : result
   end
 
   def provided(expression)
@@ -290,7 +301,6 @@ class Interpreter
   end
 
   def compose_function(list, name)
-    binding.pry
     return compose_branch(list, name) if name.is_a?(Operation) && name.branch?
 
     function = current_scope.names[name]

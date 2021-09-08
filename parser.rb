@@ -71,12 +71,12 @@ class Parser < Rly::Yacc
     statement.value = Operation.new(:assign, name.value, expression.value)
   end
 
-  # rule 'statement : HALT expression'\
-  # do |statement,_halt, expression|
-  #   statement.value = Operation.new(:halt, expression.value)
-  # end
+  rule 'statement : HALT expression'\
+  do |statement,_halt, expression|
+    statement.value = Operation.new(:halt, expression.value)
+  end
 
-  # rule 'statement : PROVIED expression'\
+  # rule 'statement : PROVIDED expression'\
   # do |statement,_provided, exp|
   #   statement.value = Operation.new(:provided, exp.value)
   # end
