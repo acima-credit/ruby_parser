@@ -3,7 +3,7 @@
 require 'rly'
 
 class Lexer < Rly::Lex
-  literals "+-*/%^=(),!><?:&|"
+  literals "+-*/%^(),!><?:&|"
   ignore " \t\n\r"
 
   token :NUMBER, /\d+\.?\d*/
@@ -20,6 +20,15 @@ class Lexer < Rly::Lex
   token :TERNARY_COLON, /\:/
   token :AND, /\&\&/
   token :OR, /\|\|/
+  token :ASSIGMENT, /\=/
+
+  alias_method :raw_next, :next
+
+  def next
+    token = raw_next 
+    puts token.inspect
+    token
+  end
 
   on_error do |t|
     puts "Illegal character #{t.value}"

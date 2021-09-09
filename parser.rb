@@ -14,15 +14,16 @@ class Operation
 end
 
 class Parser < Rly::Yacc
+  precedence :left, '==', '!='
   precedence :left, '?'
   precedence :left, ':'
   precedence :left, '&&', '||'
-  precedence :left, '<', '>', '<=', '>=', '==', '!='
+  precedence :left, '<', '>', '<=', '>='
   precedence :left, '+', '-'
   precedence :left, '*', '/'
   precedence :left, '%', '^'
   
-  rule 'statement : NAME "=" expression' do |statement, name, equals, expression|
+  rule 'statement : NAME ASSIGMENT expression' do |statement, name, equals, expression|
     statement.value = Operation.new(:assign, name.value, expression.value)
   end
 
@@ -101,16 +102,18 @@ class Parser < Rly::Yacc
 
   # if <conditional statement> then <>  else end
 
-  rule 'equality_expression : relational_condition' do |equality_expression, relational_condition|
-    equality_expression.value = Operation.new(:evaluate, relational_condition.value)
-  end
-
   rule 'equality_expression : equality_expression EQ relational_condition' do |expression, expression_a, _equals, expression_b|
+    puts "exp_a: #{expression_a.inspect}"
+    puts "exp_b: #{expression_b.inspect}"
     expression.value = Operation.new(:==, expression_a.value, expression_b.value)
   end
 
   rule 'equality_expression : equality_expression NOT_EQ relational_condition' do |expression, expression_a, _not_equals, expression_b|
     expression.value = Operation.new(:!=, expression_a.value, expression_b.value)
+  end
+
+  rule 'equality_expression : relational_condition' do |equality_expression, relational_condition|
+    equality_expression.value = Operation.new(:evaluate, relational_condition.value)
   end
 
   rule 'relational_condition : expression GT expression' do |expression, expression_a, _greater_than, expression_b|
@@ -128,6 +131,12 @@ class Parser < Rly::Yacc
   rule 'relational_condition : expression LET expression' do |expression, expression_a, _lower_equal_than, expression_b|
     expression.value = Operation.new(:<=, expression_a.value, expression_b.value)
   end
+
+  rule 'relational_condition : NUMBER' do |relational_condition, number|
+    puts "NUMBER"
+    relational_condition.value = Operation.new(:evaluate, number.value)
+  end
+
   # 1 > 2 && 3 > 4 ? 5 : 6
   # condition_list interfers with the ternary rule. FIX IT
 
