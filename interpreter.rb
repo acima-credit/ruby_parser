@@ -240,7 +240,7 @@ class Interpreter
 
       function.body.map do |expression|
         result = evaluate(expression)
-        break if result == :halt
+        break([]) if result == :halt
 
       end.last
     end
@@ -270,7 +270,7 @@ class Interpreter
   end
 
   def compose(expression, function_names, index)
-    puts "e: #{expression} fn: #{function_names}"
+    # puts "e: #{expression} fn: #{function_names}"
 
     list = evaluate(expression)
     type_check!(list, Operation, OperationTypeError)

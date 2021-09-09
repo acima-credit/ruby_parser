@@ -7,15 +7,16 @@ echo: λ\x\ x: 1 . x
 
 multiplier: λ\z\ z * 2
 
+apple: λ\x\
+  halt x ><> 10 .
+  x: x + 1 .
+  { x } ∘ apple
+
 # This is a comment that won't get evaluated
 multiline: λ\z\
   x: z + 1 .
   y: x * 2 .
   x + y
-
-apple: λ\x\
-  halt x ><> 10 .
-  { x + 1 } ∘ apple
 
 # { 1 } ∘ adder ∘ multiplier ∘ cast
 
